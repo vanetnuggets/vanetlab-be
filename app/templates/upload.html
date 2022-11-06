@@ -1,5 +1,6 @@
 <!doctype html>
 <html>
+  <script src="static/script.js" ></script>
   <head>
     <title>NS-3 Simulator</title>
   </head>
@@ -9,5 +10,10 @@
       <p><input type="file" name="simulation"></p>
       <p><input type="submit" value="Submit"></p>
     </form>
+
+    <input type="submit" onclick="run()" value="Run"/>
+
+    <div id="output"></div>
+    <div id="logs"></div>
   </body>
 </html>

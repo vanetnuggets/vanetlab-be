@@ -1,5 +1,6 @@
 from os import mkdir, path
 from shutil import rmtree
+import glob, os
 
 class FileManager:
   def __init__(self):
@@ -8,7 +9,15 @@ class FileManager:
     
     mkdir('./scenarios')
     mkdir('./scenarios/tmp')
+    self.my_path = os.path.abspath('.')
   
+  def get_logs(self):
+    fnames = []
+    for f in glob.glob(f'scenarios/tmp/*.pcap'):
+      filename = f.split('/')[-1].strip()
+      fnames.append(filename)
+    return fnames
+    
   def load(self, file):
     filename = file.filename
 

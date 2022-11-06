@@ -1,6 +1,7 @@
-from flask import Blueprint, request, make_response, jsonify, render_template
+from flask import Blueprint, send_file, request, make_response, redirect, jsonify, render_template
 from app.managers.filemanager import filemanager
-from app.managers.ns3manager import Ns3manager
+from app.managers.ns3manager import ns3manager
+import os
 
 api = Blueprint('api', __name__)
 
@@ -17,22 +18,35 @@ def upload():
   if err != None:
     return jsonify({"error": "yes", "reason": why}), 400
   
-  ns3man = Ns3manager()
-  ns3man.load(file_path)
+  ns3manager.load(file_path)
 
-  return jsonify({"status": "scenario uploaded"})
-
+  return render_template('upload.html')
 
 @api.route('/run', methods=['POST'])
 def run():
-  return jsonify({"todo": "xxx"}), 204
+  content = request.json
+  out, err = ns3manager.run()
+  
+  logs = filemanager.get_logs()
 
-
-@api.route('/status', methods=['POST'])
-def status():
-  return jsonify({"todo": "xxx"}), 204
-
+  return jsonify({
+    "output": out.decode(),
+    "logs": logs
+  })
 
 @api.route('/trace', methods=['POST'])
 def trace():
-  return jsonify({"todo": "xxx"}), 204
+  content = request.json
+
+  if 'name' not in content:
+    return jsonify({}), 400
+  
+  file = content['name']
+
+
+  root = os.path.abspath('.');
+  if os.path.isfile(f'{root}/scenarios/tmp/{file}') is False:
+    print(f'cannot find {root}/scenarios/tmp/{file}')
+    return jsonify({}), 204 
+
+  return send_file(f'{root}/scenarios/tmp/{file}')
