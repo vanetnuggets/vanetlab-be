@@ -17,14 +17,19 @@ class FileManager:
       filename = f.split('/')[-1].strip()
       fnames.append(filename)
     return fnames
-    
+
+  def get_file(self, filename):
+    root = os.path.abspath('.')
+    if os.path.isfile(f'{root}/scenarios/tmp/{filename}') is False:
+      return None
+    return f'{root}/scenarios/tmp/{filename}'
+
   def load(self, file):
     filename = file.filename
 
     if filename == '':
       return None, 'no file uploaded'
     
-    print(filename.split('.'))
     if filename.split('.')[-1].strip() != 'py':
       return None, "only accepts python ns3 scripts for now."
 
@@ -33,7 +38,7 @@ class FileManager:
       mkdir('./scenarios/tmp/')
     
     except OSError as e:
-      print(e)
+      pass
 
     file_path = './scenarios/tmp/' + filename
 
