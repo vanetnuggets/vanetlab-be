@@ -1,12 +1,12 @@
 # VANETLAB - Backend
 
-## Ako toto spustit ?
+## Ako to spojazdniť?
 
-Nainstalujeme si python < 3.9, lebo ns3 je neschopne byt aktualne
+Nainštalujeme si Python < 3.9, kvôli kompatibilite s nástrojom ns-3.
 
-My pouzivame toto na vyvoj: `python3.6 python3.6-dev python3.6-venv`.
+Náš tím používa na vývoj: `python3.6 python3.6-dev python3.6-venv`
 
-Nainstalujeme flask.
+Nainštalujeme flask.
 
 Pre spustenie treba zadat tieto ENV variables:
 
@@ -14,19 +14,17 @@ Pre spustenie treba zadat tieto ENV variables:
 export NS3_WAF_PATH=/path/na/priecinok/v/ktorom/je/waf
 ```
 
-potom uz staci len `python main.py`
+potom už stačí len `python main.py`
 
 ## Ako to funguje
 
-Ideme na `localhost:9000`, kde cez `Choose file` tlacitko nacitame `.py` ns3 simulacny scenar.
+Ideme na `localhost:9000`, kde cez `Choose file` tlačidlo načítame `.py` ns3 simulačný scenár.
 
 ![](./media/images/1.png)
 
-Stlacime tlacitko `Submit`, cim sa odosle na BE, ale este sa nevykona.
-Nasledne stlacime tlacitko `Run`, po ktorom sa vykona scenar a dostaneme output.
+Stlačíme tlačidlo `Submit`, čím sa odošle na BE, ale ešte sa nevykoná.
+Následne stlačíme tlačidlo `Run`, po ktorom sa vykoná scenár a dostaneme output.
 
 ![](./media/images/2.png)
 
-Ked klikneme na jeden z `*.pcap` odkazov tak si vieme stiahnut trace file vygenerovany simulaciou.
-
-tada
+Kde klikneme na jeden z `*.pcap` odkazov,  tak si vieme stiahnuť trace file vygenerovaný simuláciou.
