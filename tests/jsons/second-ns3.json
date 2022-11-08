@@ -1,0 +1,78 @@
+{
+  "topology": {
+    "node_count": 6,
+    "node_containers": [
+      "p2pNodes",
+      "csmaNodes"
+    ],
+    "container_settings": {
+      "p2pNodes": {
+        "type": "point_to_point",
+        "data_rate": {
+          "value": 5,
+          "format": "Mbps"
+        },
+        "delay": {
+          "value": 2,
+          "format": "ms"
+        },
+        "network_address": "10.1.1.0",
+        "network_mask": "255.255.255.0",
+        "log_pcap": true,
+        "nodes": [
+          0, 1
+        ]
+      },
+      "csmaNodes": {
+        "type": "csma",
+        "data_rate": {
+          "value": 100,
+          "format": "Mbps"
+        },
+        "delay": {
+          "value": 6500,
+          "format": "ns"
+        },
+        "network_address": "10.1.2.0",
+        "network_mask": "255.255.255.0",
+        "log_pcap": true,
+        "nodes": [
+          1, 2, 3, 4, 5
+        ]
+      }
+    }
+  },
+  "simulation": {
+    "server_apps": {
+      "port": "1337",
+      "nodes": [5],
+      "start": {
+        "value": 1,
+        "format": "s"
+      },
+      "stop": {
+        "value": 10,
+        "format": "s"
+      }
+    },
+    "client_apps": {
+      "port": "1337",
+      "network": "csmaNodes",
+      "nodes": [0],
+      "start": {
+        "value": 2,
+        "format": "s"
+      },
+      "stop": {
+        "value": 10,
+        "format": "s"
+      },
+      "interval": {
+        "value": 1,
+        "format": "s"
+      },
+      "max_packets": "1",
+      "packet_size": "1024"
+    }
+  }
+}
