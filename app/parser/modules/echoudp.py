@@ -4,4 +4,6 @@ class EchoUDPParser:
 
   def parse(self, json):
     return []
+
+    
 echo_udp_parser = EchoUDPParser()
