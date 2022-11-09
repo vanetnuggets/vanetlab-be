@@ -4,6 +4,7 @@ from app.parser.modules.echoudp import echo_udp_parser
 from app.parser.modules.ipv4 import ipv4parser
 from app.parser.modules.p2p import p2p_parser
 from app.parser.modules.log import log_parser
+from app.parser.modules.final import final_parser
 
 import json
 
@@ -33,6 +34,10 @@ class Parser:
     self.add(sim)
     logs = log_parser.parse(json)
     self.add(logs)
+    final = final_parser.parse(json)
+    self.add(final)
+
+    
     return '\n'.join(self.buf)
 
 parser = Parser()

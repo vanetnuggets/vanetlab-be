@@ -44,7 +44,7 @@
   },
   "simulation": {
     "server_apps": {
-      "port": "1337",
+      "port": 1337,
       "nodes": [5],
       "start": {
         "value": 1,
@@ -56,7 +56,7 @@
       }
     },
     "client_apps": {
-      "port": "1337",
+      "port": 1337,
       "network": "csmaNodes",
       "nodes": [0],
       "start": {
