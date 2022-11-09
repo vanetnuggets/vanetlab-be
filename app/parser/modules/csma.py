@@ -3,17 +3,20 @@ from app.parser.helpers.format_helper import format_helper
 class CSMAParser:
   def __init__(self):
     pass
-
-
-
+  
   def parse(self, data):
     out = []
 
     containers = data['topology']['node_containers']
 
     for c in containers:
+      if data['topology']['container_settings'][c]['type'] == 'csma':
+        out.append(f'# CSMA ')
+        break
+    
+    for c in containers:
       settings = data['topology']['container_settings'][c]
-      if settings['type'] != 'point_to_point':
+      if settings['type'] != 'csma':
         continue
       
       cont_name = f'{c}_csma_helper'
@@ -33,7 +36,11 @@ class CSMAParser:
         fmt = settings['delay']['format']
         together = format_helper.parse_time(val, fmt)
         out.append(f'{cont_name}.SetChannelAttribute("Delay", "{together}")')
-      return out
+
+      out.append(f'{c}_devices = {cont_name}.Install({c}_container)')
+
+    return out
+    
 
       
 
