@@ -5,4 +5,8 @@ sys.path.append(os.path.dirname(os.path.abspath(f'{__file__}/..')))
 from app.parser.parser import parser
 
 code = parser.parse('./jsons/second-ns3.json')
-print(code)
+for i, x in enumerate(code.split('\n')):
+  print(f'{i}: {x}')
+
+with open('parsed_scenario.py', 'w') as f:
+  f.write(code)

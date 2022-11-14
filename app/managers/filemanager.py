@@ -1,5 +1,6 @@
 from os import mkdir, path
 from shutil import rmtree
+from app.parser.parser import parser
 import glob, os
 
 class FileManager:
@@ -44,6 +45,24 @@ class FileManager:
 
     file.save(file_path)
     return file_path, None
+  
+  def save_json(self, json):
+    filename = 'scenario.py'
+
+    try:
+      rmtree('./scenarios/tmp/')
+      mkdir('./scenarios/tmp/')
+    
+    except OSError as e:
+      pass
+
+    ns3_script = parser.parse(json, iam_json=True)
+    print(ns3_script)
+
+    with open(self.my_path + '/scenarios/tmp/' + filename, 'w') as f:
+      f.write(ns3_script)
+    
+    return self.my_path + '/scenarios/tmp/' + filename
     
 
 filemanager = FileManager()

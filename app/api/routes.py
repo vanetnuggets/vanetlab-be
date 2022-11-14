@@ -45,3 +45,15 @@ def trace():
     return jsonify({}), 204
 
   return send_file(file)
+
+@api.route('/tracejson', methods=['POST'])
+def tracejson():
+  content = request.json
+
+  print(content)
+  file = filemanager.save_json(content)
+  if file is None:
+    return jsonify({}), 204
+  
+  ns3manager.load(file)
+  return run()

@@ -11,7 +11,7 @@ class IPv4Parser:
 
 
     out.append(f'\n# Assign Address')
-    out.append(f'address = IPv4AddressHelper()')
+    out.append(f'address = Ipv4AddressHelper()')
 
     containers = data['topology']['node_containers']
     for c in containers:
@@ -20,7 +20,7 @@ class IPv4Parser:
       addr = cont['network_address']
       mask = cont['network_mask']
 
-      out.append(f'address.SetBase(IPv4Address(\"{addr}\"), IPv4Mask(\"{mask}\"))')
+      out.append(f'address.SetBase(Ipv4Address(\"{addr}\"), Ipv4Mask(\"{mask}\"))')
       out.append(f'{c}_interfaces = address.Assign({c}_devices)')
 
 

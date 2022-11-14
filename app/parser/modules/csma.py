@@ -28,14 +28,14 @@ class CSMAParser:
       if "data_rate" in settings:
         val = settings['data_rate']['value']
         fmt = settings['data_rate']['format']
-        together = format_helper.parse_time(val, fmt)
-        out.append(f'{cont_name}.SetChannelAttribute("DataRate", "{together}")')
+        together = format_helper.string_value(val, fmt)
+        out.append(f'{cont_name}.SetChannelAttribute("DataRate", {together})')
 
       if "delay" in settings:
         val = settings['delay']['value']
         fmt = settings['delay']['format']
-        together = format_helper.parse_time(val, fmt)
-        out.append(f'{cont_name}.SetChannelAttribute("Delay", "{together}")')
+        together = format_helper.time_value(val, fmt)
+        out.append(f'{cont_name}.SetChannelAttribute("Delay", {together})')
 
       out.append(f'{c}_devices = {cont_name}.Install({c}_container)')
 

@@ -2,7 +2,18 @@ class FormatHelper:
   def __init__(self):
     pass
   
-  def parse_time(self, value, format):
-    return "yolo"
+  def string_value(self, val, format):
+    return f'StringValue("{val}{format}")'
+  
+  def parse_time(self, val, format):
+    if format == 's':
+      return f'Seconds({val}.0)'
+    elif format == 'ns':
+      return f'NanoSeconds({val})'
+    return 'enestrirobikokotini'
+
+  def time_value(self, val, format):
+    r = self.parse_time(val, format)
+    return f'TimeValue({r})'
 
 format_helper = FormatHelper()

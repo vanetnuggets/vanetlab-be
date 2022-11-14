@@ -4,15 +4,12 @@ class LogParser:
   
   def parse(self, data):
     out = []
-    containers = data['topology']['node_containers']
-
-    for c in containers:
-      helper_name = c + '_helper'
-      node = data['topology']['container_settings'][c]
-      
-      if node['log_pcap'] == True:
-        out.append(f'{helper_name}.enablePcapAll({c})')
-    
+    out += [
+      f'LogComponentEnable("UdpEchoClientApplication", LOG_LEVEL_INFO)',
+	    f'LogComponentEnable("UdpEchoServerApplication", LOG_LEVEL_INFO)'
+    ]
     return out
+
+
 
 log_parser = LogParser()

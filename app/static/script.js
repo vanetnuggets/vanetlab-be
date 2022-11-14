@@ -36,3 +36,22 @@ function get(filename) {
         window.URL.revokeObjectURL(url);   
   });
 }
+
+function pass_json() {
+  j = document.getElementById('dzejsn').value
+  console.log(j)
+
+  fetch('http://127.0.0.1:9000/tracejson', {
+    method: "POST",
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(j)
+  }).then((resp) => resp.json()).then((data) => {
+    console.log(data);
+    document.getElementById('output').innerHTML = '<pre>' + data['output'] + '</pre>';
+    for (let i of data['logs']) {
+      document.getElementById('logs').innerHTML += '<pre>' + '<div onclick="get(\''+i+'\')">' + i + '</div></pre>'
+    }
+  })
+}

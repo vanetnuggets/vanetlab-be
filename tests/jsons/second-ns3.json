@@ -45,7 +45,8 @@
   "simulation": {
     "server_apps": {
       "port": 1337,
-      "nodes": [5],
+      "network": "csmaNodes",
+      "nodes": [0],
       "start": {
         "value": 1,
         "format": "s"
@@ -57,7 +58,11 @@
     },
     "client_apps": {
       "port": 1337,
-      "network": "csmaNodes",
+      "server": {
+        "node": 0,
+        "network": "csmaNodes"
+      },
+      "network": "p2pNodes",
       "nodes": [0],
       "start": {
         "value": 2,
@@ -71,7 +76,7 @@
         "value": 1,
         "format": "s"
       },
-      "max_packets": "1",
+      "max_packets": 4,
       "packet_size": "1024"
     }
   }
