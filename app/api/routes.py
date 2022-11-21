@@ -4,6 +4,10 @@ from app.managers.ns3manager import ns3manager
 
 api = Blueprint('api', __name__)
 
+@api.route('/isalive')
+def isalive():
+  return jsonify({"islaive": True})
+
 @api.route('/', methods=['GET'])
 def index():
   return render_template('upload.html')

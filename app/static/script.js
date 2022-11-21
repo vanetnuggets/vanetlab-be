@@ -1,9 +1,7 @@
-function status() {
-
-}
+const WEB_URL = `http://127.0.0.1:9000`
 
 function run() {
-  fetch('http://127.0.0.1:9000/run', {
+  fetch(`${WEB_URL}/run`, {
     method: "POST"
   }).then((resp) => resp.json()).then((data) => {
     console.log(data);
@@ -16,7 +14,7 @@ function run() {
 
 function get(filename) {
   console.log(filename)
-  fetch('http://127.0.0.1:9000/trace', {
+  fetch(`${WEB_URL}/trace`, {
     method: "POST",
     headers: {
       'Content-Type': 'application/json'
@@ -41,7 +39,7 @@ function pass_json() {
   j = document.getElementById('dzejsn').value
   console.log(j)
 
-  fetch('http://127.0.0.1:9000/tracejson', {
+  fetch(`${WEB_URL}/tracejson`, {
     method: "POST",
     headers: {
       'Content-Type': 'application/json'

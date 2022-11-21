@@ -3,9 +3,9 @@
 ## Spustenie:
 
  - Treba mat nainstalovany docker
- - Zbuildime docker image prikazom `docker build -t vanetlab-be . `, bude to celkom dlhu chvilu trvat
- - spustime image prikazom `docker run -itdp 80:9000 vanetlab-be:latest`
- - k api sa nasledne dostanes u seba na `127.0.0.1`, ak chces iny port zmen lavu stranu prepinacu `-p`.
+ - Zbuildime docker image prikazom `docker build -t vanetlab-be . `, bude to celkom dlhu chvilu trvat a zrat 100% cpu. nejako to ale musime predychat.
+ - spustime image prikazom `docker run -itdp 9000:9000 vanetlab-be:latest`
+ - k api sa nasledne dostanes u seba na `127.0.0.1:9000` (nie localhost, lebo nemam este CORS poriesene), ak chces iny port ~~zmen lavu stranu prepinacu `-p`~~ mas zatial smolu sorry, ked bude funkcny FE tak to bude ficat.
 
 ## Development setup:
 
@@ -23,7 +23,9 @@ export VANETLAB-BE-PORT=9000
 export VANETLAB-BE-HOST=127.0.0.1
 ```
 
-Samozrejme upravit podla potreby.
+Taktiez treba upravit konstantu `WEB_URL` na tvar `http://{HOST}:{PORT}` (bez `/` na konci) v subore `app/static/script.js`. Nejde to dynamicky nastavovat nakolko sa to vola z klienta. V buducnosti sa toto bude volat z `vanetlab-fe` aplikacie a nebude to treba reisit.
+
+Samozrejme vsetky hodnoty je mozne upravit podla potreby.
 
 potom už stačí len `python main.py`
 

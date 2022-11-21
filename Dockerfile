@@ -89,6 +89,9 @@ RUN cd ns-3-allinone && ./build.py --enable-examples --enable-tests || true
 # configure NS-3
 RUN cd ns-3-allinone/ns-3.30 && ./waf configure || true && python3.8 ./waf configure || true
 
+# Run one scenario so ns3 compiles python bindings
+RUN cd ns-3-allinone/ns-3.30 && ./waf --pyrun ./examples/tutorial/first.py
+
 # Copy VANETlab Backend files
 COPY . ./vanetlab-be 
 
