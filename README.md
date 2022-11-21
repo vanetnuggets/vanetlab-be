@@ -1,6 +1,13 @@
 # VANETLAB - Backend
 
-## Ako to spojazdniť?
+## Spustenie:
+
+ - Treba mat nainstalovany docker
+ - Zbuildime docker image prikazom `docker build -t vanetlab-be . `, bude to celkom dlhu chvilu trvat
+ - spustime image prikazom `docker run -it -p 80:9000 vanetlab-be:latest`
+ - k api sa nasledne dostanes u seba na `127.0.0.1`, ak chces iny port zmen lavu stranu prepinacu `-p`.
+
+## Development setup:
 
 Nainštalujeme si Python < 3.9, kvôli kompatibilite s nástrojom ns-3.
 

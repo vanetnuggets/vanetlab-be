@@ -104,4 +104,4 @@ ENV NS3_WAF_PATH="/usr/ns-3-allinone/ns-3.30"
 EXPOSE 9000/tcp
 
 # Start API
-RUN cd vanetlab-be && python3.8 main.py
+CMD [ "python3.8", "vanetlab-be/main.py" ]
