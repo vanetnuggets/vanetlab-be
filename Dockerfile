@@ -73,8 +73,6 @@ RUN cd /tmp && wget https://bootstrap.pypa.io/get-pip.py && \
 # install pybindgen
 RUN python3.8 -m pip install pybindgen
 
-# NS-3
-
 # Create working directory
 RUN mkdir -p /usr/ns3
 WORKDIR /usr
@@ -91,14 +89,16 @@ RUN cd ns-3-allinone && ./build.py --enable-examples --enable-tests || true
 # configure NS-3
 RUN cd ns-3-allinone/ns-3.30 && ./waf configure || true && python3.8 ./waf configure || true
 
-# Clone VANETlab Backend
-RUN git clone https://github.com/vanetnuggets/vanetlab-be 
+# Copy VANETlab Backend files
+COPY . ./vanetlab-be 
 
 # Install VANETlab Backend
 RUN cd vanetlab-be && python3.8 -m pip install -r requirements.txt 
 
 # Set environment variable for ns3 WAF
 ENV NS3_WAF_PATH="/usr/ns-3-allinone/ns-3.30"
+ENV VANETLAB-BE-PORT=9000
+ENV VANETLAB-BE-HOST="0.0.0.0"
 
 # Open PORT
 EXPOSE 9000/tcp

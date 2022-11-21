@@ -4,7 +4,7 @@
 
  - Treba mat nainstalovany docker
  - Zbuildime docker image prikazom `docker build -t vanetlab-be . `, bude to celkom dlhu chvilu trvat
- - spustime image prikazom `docker run -it -p 80:9000 vanetlab-be:latest`
+ - spustime image prikazom `docker run -itdp 80:9000 vanetlab-be:latest`
  - k api sa nasledne dostanes u seba na `127.0.0.1`, ak chces iny port zmen lavu stranu prepinacu `-p`.
 
 ## Development setup:
@@ -19,7 +19,11 @@ Pre spustenie treba zadat tieto ENV variables:
 
 ```bash
 export NS3_WAF_PATH=/path/na/priecinok/v/ktorom/je/waf
+export VANETLAB-BE-PORT=9000
+export VANETLAB-BE-HOST=127.0.0.1
 ```
+
+Samozrejme upravit podla potreby.
 
 potom už stačí len `python main.py`
 
