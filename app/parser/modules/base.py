@@ -7,3 +7,6 @@ class BaseParser:
 
   def comment(self, arr, msg):
     arr.append(f'\n# {msg}')
+  
+  def init(self, parent):
+    self.daddy = parent

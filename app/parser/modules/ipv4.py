@@ -1,4 +1,6 @@
-class IPv4Parser:
+from app.parser.modules.base import BaseParser
+
+class IPv4Parser(BaseParser):
   def __init__(self):
     pass
 
@@ -19,9 +21,10 @@ class IPv4Parser:
       
       addr = cont['network_address']
       mask = cont['network_mask']
+      name = cont['network_name']
 
       out.append(f'address.SetBase(Ipv4Address(\"{addr}\"), Ipv4Mask(\"{mask}\"))')
-      out.append(f'{c}_interfaces = address.Assign({c}_devices)')
+      out.append(f'{name} = address.Assign({c}_devices)')
 
 
 

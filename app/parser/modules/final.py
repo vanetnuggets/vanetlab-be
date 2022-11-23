@@ -1,4 +1,6 @@
-class FinalParser:
+from app.parser.modules.base import BaseParser
+
+class FinalParser(BaseParser):
   def __init__(self):
     pass
   

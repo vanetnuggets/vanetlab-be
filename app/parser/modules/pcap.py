@@ -1,4 +1,6 @@
-class PcapParser:
+from app.parser.modules.base import BaseParser
+
+class PcapParser(BaseParser):
   def __init__(self):
     pass
   

@@ -1,6 +1,7 @@
 from app.parser.helpers.format_helper import format_helper
+from app.parser.modules.base import BaseParser
 
-class P2PParser:
+class P2PParser(BaseParser):
   def __init__(self):
     pass
 

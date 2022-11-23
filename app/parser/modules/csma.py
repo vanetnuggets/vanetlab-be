@@ -1,6 +1,8 @@
 from app.parser.helpers.format_helper import format_helper
+from app.parser.modules.base import BaseParser
 
-class CSMAParser:
+
+class CSMAParser(BaseParser):
   def __init__(self):
     pass
   

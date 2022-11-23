@@ -1,4 +1,6 @@
-class LogParser:
+from app.parser.modules.base import BaseParser
+
+class LogParser(BaseParser):
   def __init__(self):
     pass
   

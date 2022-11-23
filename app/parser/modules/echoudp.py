@@ -1,9 +1,95 @@
 from app.parser.helpers.format_helper import format_helper
 from app.parser.modules.nodes import node_parser
+from app.model.udpcomm import UDPClient, UDPServer
+from app.parser.modules.base import BaseParser
 
-class EchoUDPParser:
+class EchoUDPParser(BaseParser):
   def __init__(self):
-    pass
+    super().__init__()
+
+  def _get_timeboudns(self, timedata, key=None):
+    if 'value' not in timedata or 'format' not in timedata:
+      # XXX possibly throw an exception instead ?
+      return None, None
+    else:
+      return format_helper.parse_time(timedata['value'], timedata['format'])
+  
+  def parse_client(self, data, orig):
+    out = []
+    self.comment(out, 'UDP Echo client')
+
+    sim = orig['simulation']['client'][data]
+
+    attrs = []
+    if 'max_packets' in sim:
+      attrs.append(('MaxPackets', sim['max_packets']))
+    if 'interval' in sim:
+      attrs.append(('Interval', self._get_timeboudns(sim['interval'], 'interval')))
+    if 'packet_size' in sim:
+      attrs.append(('PacketSize', sim['packet_size']))
+
+    start = self._get_timeboudns(sim['start'], 'start')
+    stop  = self._get_timeboudns(sim['stop'], 'stop')
+    my_server = orig['simulation']['server'][sim['server']]
+    server_network = my_server['network']
+    server_node    = self.daddy.node_parser.node(server_network, my_server['node'])
+
+
+    interfaces = orig['topology']['container_settings'][server_network]['network_name']
+
+    client = UDPClient(
+      port=sim['port'] if 'port' in sim else None,
+      name=sim['name'] if 'name' in sim else None,
+      node=sim['node'] if 'node' in sim else None,
+      start=start,
+      stop=stop,
+      server_node=server_node,
+      server_network=interfaces,
+      network=sim['network'] if 'network' in sim else None,
+      attrs=attrs
+    )
+
+    return out + client.dumppy()
+
+  def parse_server(self, data, orig):
+    out = []
+    self.comment(out, 'Parsing Echo Server')
+    
+    sim = orig['simulation']['server'][data]
+
+    port = sim['port']
+    name = sim['name']
+    start = self._get_timeboudns(sim['start'], 'start')
+    stop  = self._get_timeboudns(sim['stop'], 'stop')
+    network = sim['network']
+    node = self.daddy.node_parser.node(network, sim['node'])
+
+    server = UDPServer(
+      port=port, 
+      name=name, 
+      start=start, 
+      stop=stop, 
+      network=network, 
+      node=node, 
+      attrs=[]
+    )
+    return out + server.dumppy()
+    
+
+  def p(self, data):
+    out = []
+    if 'simulation' not in data:
+      return []
+    
+    if 'server' in data['simulation']:
+      for x in data['simulation']['client']:
+        out += self.parse_client(x, data)
+              
+      for x in data['simulation']['server']:
+        out += self.parse_server(x, data)
+        
+    
+    return out
 
   def parse(self, data):
     out = []
