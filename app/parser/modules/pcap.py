@@ -6,6 +6,7 @@ class PcapParser(BaseParser):
   
   def parse(self, data):
     out = []
+    self.comment(out, "Trace pcap")
     containers = data['topology']['node_containers']
 
     for c in containers:
@@ -24,7 +25,7 @@ class PcapParser(BaseParser):
       node = data['topology']['container_settings'][c]
       
       if node['log_pcap'] == True:
-        out.append(f'{helper_name}.EnablePcapAll({c})')
+        out.append(f'{helper_name}.EnablePcapAll("{c}")')
     
     return out
 

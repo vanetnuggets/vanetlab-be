@@ -27,24 +27,23 @@ def upload():
 
 @api.route('/run', methods=['POST'])
 def run():
-  content = request.json
   out, err = ns3manager.run()
   
   logs = filemanager.get_logs()
 
   return jsonify({
-    "output": out.decode(),
+    "output": out,
     "logs": logs
   })
 
-@api.route('/trace', methods=['POST'])
+@api.route('/trace', methods=['GET'])
 def trace():
-  content = request.json
-
-  if 'name' not in content:
+  if 'name' not in request.args:
     return jsonify({}), 400
-  
-  file = filemanager.get_file(content['name'])
+
+  name = request.args.get('name')
+
+  file = filemanager.get_file(name)
   if file is None:
     return jsonify({}), 204
 
@@ -54,7 +53,6 @@ def trace():
 def tracejson():
   content = request.json
 
-  print(content)
   file = filemanager.save_json(content)
   if file is None:
     return jsonify({}), 204

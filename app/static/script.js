@@ -4,25 +4,28 @@ function run() {
   fetch(`${WEB_URL}/run`, {
     method: "POST"
   }).then((resp) => resp.json()).then((data) => {
-    console.log(data);
     document.getElementById('output').innerHTML = '<pre>' + data['output'] + '</pre>';
+
+    let log_cont = document.getElementById('logs').innerHTML
+    log_cont += '<pre>'
     for (let i of data['logs']) {
-      document.getElementById('logs').innerHTML += '<pre>' + '<div onclick="get(\''+i+'\')">' + i + '</div></pre>'
+      let name = i.name;
+      let size = i.size;
+      log_cont +=`<div onclick="get(\''${name}'\')"> ${name} (${size} bytes)</div></pre>`
     }
+    log_cont += '</pre>'
   })
 }
 
 function get(filename) {
   console.log(filename)
-  fetch(`${WEB_URL}/trace`, {
-    method: "POST",
+  fetch(`${WEB_URL}/trace?name=${filename}`, {
+    method: "GET",
     headers: {
       'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({"name": filename})
+    }
   }).then(response => response.blob())
   .then(blob => {
-    console.log(blob);
     const url = window.URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.style.display = "none";
@@ -46,10 +49,19 @@ function pass_json() {
     },
     body: JSON.stringify(j)
   }).then((resp) => resp.json()).then((data) => {
-    console.log(data);
-    document.getElementById('output').innerHTML = '<pre>' + data['output'] + '</pre>';
-    for (let i of data['logs']) {
-      document.getElementById('logs').innerHTML += '<pre>' + '<div onclick="get(\''+i+'\')">' + i + '</div></pre>'
+    let elem_output = document.getElementById('output')
+    elem_output.innerHTML = '<pre>' 
+    for (let msg of data['output']) {
+      elem_output.innerHTML += `${msg}<br>`;
     }
+    elem_output +=  '</pre>';
+    let elem_log = document.getElementById('logs')
+    elem_log.innerHTML = '<pre>'
+    for (let i of data['logs']) {
+      let name = i.name;
+      let size = i.size;
+      elem_log.innerHTML +=`<div onclick="get(\''${name}'\')"> ${name} (${size} bytes)</div></pre>`
+    }
+    elem_log.innerHTML += '</pre>'
   })
 }

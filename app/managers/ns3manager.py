@@ -34,14 +34,17 @@ class Ns3manager:
 
 
     if b'successfully' in out:
+      # Simulation output is written into stderr for some reason
+      output = err.decode().strip().split('\n')
+
       # move logs
       for f in glob.glob(f'{self.waf_path}/*.pcap'):
         filename = f.split('/')[-1].strip()
         os.rename(f, f'{self.my_path}/scenarios/tmp/{filename}')
 
-      return err, None
+      return output, None
     else:
-      return '', 'out'
+      return [], err
   
   def get_pcap(self):
     self._check_status('done')

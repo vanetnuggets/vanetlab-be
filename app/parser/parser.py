@@ -11,6 +11,9 @@ import json
 
 class Parser:
   def __init__(self):
+    # ---> unique random value to handle multiple simulations simulatenously
+    self.log_name = 'trace'
+
     self.buf = []
     self.node_parser = NodeParser()
     self.node_parser.init(self)
@@ -47,37 +50,38 @@ class Parser:
       "import sys"
     ])
 
-  def p(self, filename, iam_json=False):
+  def parse(self, filename, iam_json=False):
     if iam_json is False:
       data = self._to_json(filename)
     else:
       data = json.loads(filename)
 
-    print('------')
-    print(data)
     self._add_imports()
 
-    logs = log_parser.parse(data)
+    logs = self.log_parser.parse(data)
     self.add(logs)
     nodes = self.node_parser.parse(data)
     self.add(nodes)
-    p2p = p2p_parser.parse(data)
+    p2p = self.p2p_parser.parse(data)
     self.add(p2p)
-    csma = csma_parser.parse(data)
+    csma = self.csma_parser.parse(data)
     self.add(csma)
-    ipv4 = ipv4parser.parse(data)
+    ipv4 = self.ipv4parser.parse(data)
     self.add(ipv4)
     sim = self.echo_udp_parser.p(data)
     self.add(sim)
+
+    pcap = self.pcap_parser.parse(data)
+    self.add(pcap)
     
-    final = final_parser.parse(data)
+    final = self.final_parser.parse(data)
     self.add(final)
 
     
     return '\n'.join(self.buf)
 
 
-  def parse(self, filename, iam_json=False):
+  def _parse(self, filename, iam_json=False):
     if iam_json is False:
       data = self._to_json(filename)
     else:

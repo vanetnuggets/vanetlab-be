@@ -16,12 +16,12 @@
         },
         "delay": {
           "value": 1,
-          "format": "ms"
+          "format": "ns"
         },
         "network_name": "p2p_interfaces",
         "network_address": "10.2.2.0",
         "network_mask": "255.255.255.0",
-        "log_pcap": false,
+        "log_pcap": true,
         "nodes": [
           7, 9
         ]
@@ -36,12 +36,12 @@
         },
         "delay": {
           "value": 1,
-          "format": "ms"
+          "format": "ns"
         },
         "network_name": "csma_interfaces",
         "network_address": "10.1.1.0",
         "network_mask": "255.255.255.0",
-        "log_pcap": false,
+        "log_pcap": true,
         "nodes": [
           2, 3, 4, 7
         ]

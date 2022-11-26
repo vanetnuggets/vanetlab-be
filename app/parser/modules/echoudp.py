@@ -22,11 +22,11 @@ class EchoUDPParser(BaseParser):
 
     attrs = []
     if 'max_packets' in sim:
-      attrs.append(('MaxPackets', sim['max_packets']))
+      attrs.append(('MaxPackets', format_helper.parse_uint(sim['max_packets'])))
     if 'interval' in sim:
-      attrs.append(('Interval', self._get_timeboudns(sim['interval'], 'interval')))
+      attrs.append(('Interval', format_helper.time_value(sim['interval']['value'], sim['interval']['format'])))
     if 'packet_size' in sim:
-      attrs.append(('PacketSize', sim['packet_size']))
+      attrs.append(('PacketSize', format_helper.parse_uint(sim['packet_size'])))
 
     start = self._get_timeboudns(sim['start'], 'start')
     stop  = self._get_timeboudns(sim['stop'], 'stop')
@@ -45,7 +45,7 @@ class EchoUDPParser(BaseParser):
       stop=stop,
       server_node=server_node,
       server_network=interfaces,
-      network=sim['network'] if 'network' in sim else None,
+      network=f"{sim['network']}_container" if 'network' in sim else None,
       attrs=attrs
     )
 
@@ -61,8 +61,8 @@ class EchoUDPParser(BaseParser):
     name = sim['name']
     start = self._get_timeboudns(sim['start'], 'start')
     stop  = self._get_timeboudns(sim['stop'], 'stop')
-    network = sim['network']
-    node = self.daddy.node_parser.node(network, sim['node'])
+    node = self.daddy.node_parser.node(sim['network'], sim['node'])
+    network = f"{sim['network']}_container"
 
     server = UDPServer(
       port=port, 

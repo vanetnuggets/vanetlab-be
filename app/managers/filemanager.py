@@ -16,7 +16,10 @@ class FileManager:
     fnames = []
     for f in glob.glob(f'scenarios/tmp/*.pcap'):
       filename = f.split('/')[-1].strip()
-      fnames.append(filename)
+      fnames.append({
+        "name": filename,
+        "size": os.path.getsize(f)
+      })
     return fnames
 
   def get_file(self, filename):

@@ -40,7 +40,6 @@ class CSMAParser(BaseParser):
         out.append(f'{cont_name}.SetChannelAttribute("Delay", {together})')
 
       out.append(f'{c}_devices = {cont_name}.Install({c}_container)')
-
     return out
     
 

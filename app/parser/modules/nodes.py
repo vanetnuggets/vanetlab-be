@@ -32,9 +32,6 @@ class NodeParser(BaseParser):
           self.nodes[y] = i
           i += 1
     
-    print(self.nodes)
-
-    
     all_nodes = [
       f'_all_nodes = NodeContainer()',
       f'_all_nodes.Create({node_count})'

@@ -10,10 +10,12 @@ class FormatHelper:
       return f'Seconds({val}.0)'
     elif format == 'ns':
       return f'NanoSeconds({val})'
-    return 'enestrirobikokotini'
+    return f'MiliSeconds({val})'
 
   def time_value(self, val, format):
     r = self.parse_time(val, format)
     return f'TimeValue({r})'
 
+  def parse_uint(self, val):
+    return f'UintegerValue({val})'
 format_helper = FormatHelper()
