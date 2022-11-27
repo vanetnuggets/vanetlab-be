@@ -49,12 +49,17 @@ class Parser:
       "from ns.applications import *",
       "import sys"
     ])
+  
+  def _clear(self):
+    self.buf = []
 
   def parse(self, filename, iam_json=False):
+    self._clear()
+    
     if iam_json is False:
       data = self._to_json(filename)
     else:
-      data = json.loads(filename)
+      data = filename
 
     self._add_imports()
 

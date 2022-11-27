@@ -52,7 +52,7 @@ def trace():
 @api.route('/tracejson', methods=['POST'])
 def tracejson():
   content = request.json
-
+  print(content)
   file = filemanager.save_json(content)
   if file is None:
     return jsonify({}), 204

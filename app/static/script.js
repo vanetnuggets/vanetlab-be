@@ -54,7 +54,7 @@ function pass_json() {
     for (let msg of data['output']) {
       elem_output.innerHTML += `${msg}<br>`;
     }
-    elem_output +=  '</pre>';
+    elem_output.innerHTML +=  '</pre>';
     let elem_log = document.getElementById('logs')
     elem_log.innerHTML = '<pre>'
     for (let i of data['logs']) {

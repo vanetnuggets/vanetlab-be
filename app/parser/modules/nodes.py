@@ -20,6 +20,7 @@ class NodeParser(BaseParser):
 
     out = []
     node_count = data['topology']['node_count']
+    node_count = 100 # TODO FIX POVEDZ VOJTOVI NEH TO POROBI
     containers = data['topology']['node_containers']
 
     # Create initial node mappings
@@ -38,6 +39,7 @@ class NodeParser(BaseParser):
     ]
     out += all_nodes
 
+    print(self.nodes);
     
     for c in containers:
       cont_nodes = []
@@ -52,7 +54,6 @@ class NodeParser(BaseParser):
 
         cont_nodes.append(f'{cont_name}.Add(_all_nodes.Get({self._to_index(node)}))')
         
-      out.append(cont_name)
       out += cont_nodes
 
     return out

@@ -30,6 +30,8 @@ class EchoUDPParser(BaseParser):
 
     start = self._get_timeboudns(sim['start'], 'start')
     stop  = self._get_timeboudns(sim['stop'], 'stop')
+    print(orig['simulation']['server'])
+    print(sim['server'])
     my_server = orig['simulation']['server'][sim['server']]
     server_network = my_server['network']
     server_node    = self.daddy.node_parser.node(server_network, my_server['node'])
