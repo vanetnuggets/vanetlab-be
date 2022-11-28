@@ -10,3 +10,4 @@ python-config
 typing_extensions
 Werkzeug
 zipp
+flask_cors
