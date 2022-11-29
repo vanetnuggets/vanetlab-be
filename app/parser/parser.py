@@ -35,6 +35,12 @@ class Parser:
   def add(self, item):
     self.buf += item
   
+  def check_import(self, imp):
+    for x in self.buf:
+      if imp in x:
+        return True
+    return False
+  
   def _to_json(self, filename):
     with open(filename, 'r') as f:
       return json.loads(f.read())

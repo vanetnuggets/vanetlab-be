@@ -18,4 +18,7 @@ class FormatHelper:
 
   def parse_uint(self, val):
     return f'UintegerValue({val})'
+
+  def ssid_value(self, val):
+    return f'SsidValue(Ssid("{val}"))'
 format_helper = FormatHelper()

@@ -1,0 +1,67 @@
+{
+  "topology": {
+    "node_count": 5,
+    "node_containers": [
+      "wifi_nodes"
+    ],
+    "container_settings": {
+      "wifi_nodes": {
+        "id": 1,
+        "name": "wifi_nodes",
+        "type": "wifi",
+        "network_address": "10.2.2.0",
+        "network_mask": "255.255.255.0",
+        "log_pcap": true,
+        "log_ascii": true,
+        "ssid": "eduroam",
+        "AP": 0,
+        "nodes": [
+          1, 2, 3, 4
+        ]
+      }
+    }
+  },
+  "simulation": {
+    "server": {
+      "echo_server": {
+        "id": 0,
+        "name": "echo_server",
+        "port": 9,
+        "start": {
+          "value": 1,
+          "format": "s"
+        },
+        "stop": {
+          "value": 10,
+          "format": "s"
+        },
+        "network": "wifi_nodes",
+        "node": 7
+      }
+    },
+    "client": {
+      "echo_client": {
+        "id": 0,
+        "name": "echo_client",
+        "port": 9,
+        "start": {
+          "value": 1,
+          "format": "s"
+        },
+        "stop": {
+          "value": 10,
+          "format": "s"
+        },
+        "network": "wifi_nodes",
+        "node": 2,
+        "server": "echo_server",
+        "interval": {
+          "value": 1,
+          "format": "s"
+        },
+        "max_packets": 10,
+        "packet_size": 128
+      }
+    }
+  }
+}
