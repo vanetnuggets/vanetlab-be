@@ -6,6 +6,7 @@ from app.parser.modules.p2p import p2p_parser, P2PParser
 from app.parser.modules.log import log_parser, LogParser
 from app.parser.modules.final import final_parser, FinalParser
 from app.parser.modules.pcap import pcap_parser, PcapParser
+from app.parser.modules.wifi import WifiParser
 
 import json
 
@@ -17,6 +18,8 @@ class Parser:
     self.buf = []
     self.node_parser = NodeParser()
     self.node_parser.init(self)
+    self.wifi_parser = WifiParser()
+    self.wifi_parser.init(self)
     self.csma_parser = CSMAParser()
     self.csma_parser.init(self)
     self.echo_udp_parser = EchoUDPParser()
@@ -34,6 +37,12 @@ class Parser:
 
   def add(self, item):
     self.buf += item
+  
+  def check_import(self, imp):
+    for x in self.buf:
+      if imp in x:
+        return True
+    return False
   
   def _to_json(self, filename):
     with open(filename, 'r') as f:
@@ -67,6 +76,7 @@ class Parser:
     self.add(logs)
     nodes = self.node_parser.parse(data)
     self.add(nodes)
+    self.add(self.wifi_parser.parse(data))
     p2p = self.p2p_parser.parse(data)
     self.add(p2p)
     csma = self.csma_parser.parse(data)

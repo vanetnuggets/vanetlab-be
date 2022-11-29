@@ -9,6 +9,7 @@ class FinalParser(BaseParser):
     
     out.append(f'\n# finishing touches...')
     out.append(f'Ipv4GlobalRoutingHelper.PopulateRoutingTables()')
+    out.append(f'Simulator.Stop(Seconds(10.0))')
     out.append(f'Simulator.Run()')
     out.append(f'Simulator.Destroy()')
 
