@@ -35,14 +35,13 @@ class WifiModel(BaseModel):
 
   self explanatory.
 
-  @param ap - index of ap node in global _all_nodes container
-  @param nodes - any number of nodes as indexes in global _all_nodes container 
+  @param network - name of container holding wifi nodes
   """
-  def __init__(self, name, ssid, ap, nodes, log_pcap=False, log_ascii=False):
+  def __init__(self, name, ssid, network, log_pcap=False, log_ascii=False):
     self.name = name
     self.ssid = ssid
-    self.ap = ap
-    self.nodes = nodes
+    self.ap = f'{network}_ap'
+    self.nodes = f'{network}_sta'
     self.log_pcap = log_pcap
     self.log_ascii = log_ascii
   

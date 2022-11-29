@@ -6,6 +6,7 @@ from app.parser.modules.p2p import p2p_parser, P2PParser
 from app.parser.modules.log import log_parser, LogParser
 from app.parser.modules.final import final_parser, FinalParser
 from app.parser.modules.pcap import pcap_parser, PcapParser
+from app.parser.modules.wifi import WifiParser
 
 import json
 
@@ -17,6 +18,8 @@ class Parser:
     self.buf = []
     self.node_parser = NodeParser()
     self.node_parser.init(self)
+    self.wifi_parser = WifiParser()
+    self.wifi_parser.init(self)
     self.csma_parser = CSMAParser()
     self.csma_parser.init(self)
     self.echo_udp_parser = EchoUDPParser()
