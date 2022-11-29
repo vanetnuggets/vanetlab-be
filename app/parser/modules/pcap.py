@@ -20,7 +20,7 @@ class PcapParser(BaseParser):
       
       # TODO nejaky handler tu raz bude zejo
       if helper_name is None:
-        PADNI()
+        helper_name = '# '
 
       node = data['topology']['container_settings'][c]
       

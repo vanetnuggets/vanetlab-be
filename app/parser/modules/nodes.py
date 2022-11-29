@@ -53,27 +53,30 @@ class NodeParser(BaseParser):
       # Handle wifi container 
       #  - nodes need to be split between AP and STA containers
       if this_cont['type'] == 'wifi':
+        out.append(f'{cont_name} = NodeContainer()')
         out.append(f'{cont_name}_ap = NodeContainer()')
         out.append(f'{cont_name}_sta = NodeContainer()')
         
         # Get AP node - must not be added in STA container
         ap_node = this_cont['AP']
 
-        for i, node in enumerate(this_cont[c]['nodes']):
+        for i, node in enumerate(this_cont['nodes']):
           # Add every node into node map
           self.nodemap[c][node] = i
           
           # Add STA nodes into STA container
           if node != ap_node:
             cont_nodes.append(f'{cont_name}_sta.Add(_all_nodes.Get({self._to_index(node)}))')
-          
-          # Add AP node into AP container
-          cont_nodes.append(f'{cont_name}_ap.Add(_all_nodes.Get({self._to_index(ap_node)})))
+          cont_nodes.append(f'{cont_name}.Add(_all_nodes.Get({self._to_index(node)}))')
       
+        # Add AP node into AP container
+        cont_nodes.append(f'{cont_name}_ap.Add(_all_nodes.Get({self._to_index(ap_node)}))')
+
       # Handle all other contaienrs 
       else:
         out.append(f'{cont_name} = NodeContainer()')
-        for i, node in enumerate(this_cont[c]['nodes']):
+        print(this_cont)
+        for i, node in enumerate(this_cont['nodes']):
           self.nodemap[c][node] = i
           cont_nodes.append(f'{cont_name}.Add(_all_nodes.Get({self._to_index(node)}))')
         

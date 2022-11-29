@@ -22,10 +22,10 @@ from app.parser.helpers.concat_helper import add
 from app.parser.helpers.format_helper import format_helper
 
 imports = [
-  "from ns.applications import *"
-  "from ns.core import *"
-  "from ns.mobility import *"
-  "from ns.network import *"
+  "from ns.applications import *",
+  "from ns.core import *",
+  "from ns.mobility import *",
+  "from ns.network import *",
   "from ns.wifi import *"
 ]
 
@@ -37,13 +37,15 @@ class WifiModel(BaseModel):
 
   @param network - name of container holding wifi nodes
   """
-  def __init__(self, name, ssid, network, log_pcap=False, log_ascii=False):
+  def __init__(self, parser, name, ssid, network, mobility, log_pcap=False, log_ascii=False):
+    self.parser = parser
     self.name = name
     self.ssid = ssid
     self.ap = f'{network}_ap'
-    self.nodes = f'{network}_sta'
+    self.sta = f'{network}_sta'
     self.log_pcap = log_pcap
     self.log_ascii = log_ascii
+    self.mobility = mobility
   
   """
   @brief generates python ns3 simulation script for wifi network creation
@@ -52,24 +54,15 @@ class WifiModel(BaseModel):
     res = []
 
     # Initialize container specific values
-    sta = f'{self.name}_sta_nodes'
-    ap = f'{self.name}_ap_nodes'
     wifi_mac = f'{self.name}_mac'
     wifi_phy = f'{self.name}_phy'
     wifi_chn = f'{self.name}_chn'
     ssid = format_helper.ssid_value(self.ssid)
 
-    # Creates node containers
-    add(res, "{sta} = NodeContainer()")
-    add(res, "{ap}  = NodeContainer()")
-
-    add(res, "{sta}.Create({len(self.nodes)})")
-    add(res, "{ap}.Create(1)")
-
     # Add needed imports which are not yet imported
     for imp in imports:
-      if self.daddy.check_import(imp) == False:
-        res.append(imp)
+      if self.parser.daddy.check_import(imp) == False:
+        add(res, imp)
 
     # Setup generic wifi shit
     # No config here, idk what even to configure, its just gibberish
@@ -80,14 +73,20 @@ class WifiModel(BaseModel):
     add(res, f'{self.name}.SetRemoteStationManager("ns3::ArfWifiManager")')
     
     # Create MAC layer for AP node and install AP node config
-    add(res, f'{wifi_mac} = WifiMacHelper')
-    add(res, f'{wifi_mac}.SetType("ns3::StaWifiMac", "Ssid", "{ssid}"))')
+    add(res, f'{wifi_mac} = WifiMacHelper()')
+    add(res, f'{wifi_mac}.SetType("ns3::StaWifiMac", "Ssid", {ssid})')
     
     # TODO XXX verify if _devices is ok ? maybe needs to be _interfaces idk
-    add(res, f'{ap}_devices = {self.name}.Install({wifi_phy}, {wifi_chn}, {ap})')
+    add(res, f'{self.ap}_devices = {self.name}.Install({wifi_phy}, {wifi_mac}, {self.ap})')
     
     # Create MAC layer for STA nodes and install STA node config
-    add(res, f'{wifi_mac}.SetType("ns3::ApWifiMac", "Ssid", "{ssid}"))')
-    add(res, f'{sta}_devices = {self.name}.Install({wifi_phy}, {wifi_chn}, {sta})')
+    add(res, f'{wifi_mac}.SetType("ns3::ApWifiMac", "Ssid", {ssid})')
+    add(res, f'{self.sta}_devices = {self.name}.Install({wifi_phy}, {wifi_mac}, {self.sta})')
+
+    add(res, f'{self.name} = MobilityHelper()')
+    add(res, f'{self.name}.Install({self.sta})')
+    add(res, f'{self.name}.Install({self.ap})')
+
+    add(res, f'{self.name}_devices = NetDeviceContainer({self.ap}_devices,{self.sta}_devices)')
 
     return res

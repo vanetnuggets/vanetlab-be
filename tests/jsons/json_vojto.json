@@ -18,7 +18,6 @@
           "value": 1,
           "format": "ns"
         },
-        "network_name": "p2p_interfaces",
         "network_address": "10.2.2.0",
         "network_mask": "255.255.255.0",
         "log_pcap": true,
@@ -28,7 +27,7 @@
       },
       "csma_nodes": {
         "id": 0,
-        "name": "csma_nodes_interfaces",
+        "name": "csma_nodes",
         "type": "csma",
         "data_rate": {
           "value": 100,
@@ -38,7 +37,6 @@
           "value": 1,
           "format": "ns"
         },
-        "network_name": "csma_interfaces",
         "network_address": "10.1.1.0",
         "network_mask": "255.255.255.0",
         "log_pcap": true,

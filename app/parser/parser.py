@@ -76,6 +76,7 @@ class Parser:
     self.add(logs)
     nodes = self.node_parser.parse(data)
     self.add(nodes)
+    self.add(self.wifi_parser.parse(data))
     p2p = self.p2p_parser.parse(data)
     self.add(p2p)
     csma = self.csma_parser.parse(data)
