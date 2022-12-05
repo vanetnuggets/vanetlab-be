@@ -28,8 +28,6 @@ class Ns3manager:
   
   def run(self):
     # self._check_status('loaded')
-
-    print(self.waf_path)
     process = Popen([self.waf_path+'/waf', '--pyrun', os.path.abspath(self.filename)], cwd=self.waf_path, stdout=PIPE, stderr=PIPE)
     out, err = process.communicate()
 
