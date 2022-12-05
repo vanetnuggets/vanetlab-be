@@ -79,9 +79,7 @@
         },
         "network": "csma_nodes",
         "node": 2,
-        "server": {
-          "name": "echo_server"
-        },
+        "server": "echo_server",
         "interval": {
           "value": 1,
           "format": "s"

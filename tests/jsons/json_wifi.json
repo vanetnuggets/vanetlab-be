@@ -55,9 +55,7 @@
         },
         "network": "wifi_nodes",
         "node": 4,
-        "server": {
-          "name": "echo_server"
-        },
+        "server": "echo_server",
         "interval": {
           "value": 1,
           "format": "s"
