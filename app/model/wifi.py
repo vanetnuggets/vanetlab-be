@@ -21,13 +21,7 @@ from app.model.base import BaseModel
 from app.parser.helpers.concat_helper import add
 from app.parser.helpers.format_helper import format_helper
 
-imports = [
-  "from ns.applications import *",
-  "from ns.core import *",
-  "from ns.mobility import *",
-  "from ns.network import *",
-  "from ns.wifi import *"
-]
+
 
 class WifiModel(BaseModel):
   """
@@ -46,6 +40,13 @@ class WifiModel(BaseModel):
     self.log_pcap = log_pcap
     self.log_ascii = log_ascii
     self.mobility = mobility
+    self.imports = [
+      "from ns.applications import *",
+      "from ns.core import *",
+      "from ns.mobility import *",
+      "from ns.network import *",
+      "from ns.wifi import *"
+    ]
   
   """
   @brief generates python ns3 simulation script for wifi network creation
@@ -60,9 +61,7 @@ class WifiModel(BaseModel):
     ssid = format_helper.ssid_value(self.ssid)
 
     # Add needed imports which are not yet imported
-    for imp in imports:
-      if self.parser.daddy.check_import(imp) == False:
-        add(res, imp)
+    self.add_imports(res)
 
     # Setup generic wifi shit
     # No config here, idk what even to configure, its just gibberish

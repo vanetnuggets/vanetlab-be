@@ -60,7 +60,6 @@ class FileManager:
       pass
 
     ns3_script = parser.parse(json, iam_json=True)
-    print(ns3_script)
 
     with open(self.my_path + '/scenarios/tmp/' + filename, 'w') as f:
       f.write(ns3_script)

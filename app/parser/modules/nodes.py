@@ -41,8 +41,6 @@ class NodeParser(BaseParser):
       f'_all_nodes.Create({node_count})'
     ]
     out += all_nodes
-
-    print(self.nodes);
     
     for c in containers:
       cont_nodes = []
@@ -75,7 +73,6 @@ class NodeParser(BaseParser):
       # Handle all other contaienrs 
       else:
         out.append(f'{cont_name} = NodeContainer()')
-        print(this_cont)
         for i, node in enumerate(this_cont['nodes']):
           self.nodemap[c][node] = i
           cont_nodes.append(f'{cont_name}.Add(_all_nodes.Get({self._to_index(node)}))')

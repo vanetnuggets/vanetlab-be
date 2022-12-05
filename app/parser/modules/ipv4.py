@@ -21,7 +21,7 @@ class IPv4Parser(BaseParser):
       
       addr = cont['network_address']
       mask = cont['network_mask']
-
+      name = f'{c}_interfaces'
       out.append(f'address.SetBase(Ipv4Address(\"{addr}\"), Ipv4Mask(\"{mask}\"))')
       out.append(f'{c}_interfaces = address.Assign({c}_devices)')
 
