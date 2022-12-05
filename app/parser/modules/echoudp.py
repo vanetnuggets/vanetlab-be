@@ -36,13 +36,8 @@ class EchoUDPParser(BaseParser):
     server_node    = self.daddy.node_parser.node(server_network, my_server['node'])
     my_node = self.daddy.node_parser.node(sim['network'], sim['node'])
 
-<<<<<<< HEAD
-    interfaces = orig['topology']['container_settings'][server_network]['name'] + '_interfaces'
-    
-=======
     interfaces = sim['network'] + '_interfaces'
 
->>>>>>> acd9c21 (remove network_name dependency)
     client = UDPClient(
       port=sim['port'] if 'port' in sim else None,
       name=sim['name'] if 'name' in sim else None,
