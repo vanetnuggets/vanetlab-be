@@ -36,6 +36,7 @@ class P2PParser(BaseParser):
         out.append(f'{cont_name}.SetChannelAttribute("Delay", {together})')
 
       out.append(f'{c}_devices = {cont_name}.Install({c}_container)')
+      out.append(f'{cont_name}.EnablePcapAll("{c}")')
     return out
 
 p2p_parser = P2PParser()

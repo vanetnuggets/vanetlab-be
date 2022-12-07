@@ -13,7 +13,7 @@ ok = 0
 failed = 0
 
 for test in tests:
-  err = test.all()
+  err = test.all(False)
   if err:
     failed += 1
   else:

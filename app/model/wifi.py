@@ -88,4 +88,7 @@ class WifiModel(BaseModel):
 
     add(res, f'{self.name}_devices = NetDeviceContainer({self.ap}_devices,{self.sta}_devices)')
 
+    if self.log_pcap:
+      add(res, f'{wifi_phy}.EnablePcapAll({self.name})')
+
     return res

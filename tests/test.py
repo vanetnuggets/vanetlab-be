@@ -25,7 +25,7 @@ class Test:
     if self._check_ran() == False:
       return
     for i, x in enumerate(self.code.split('\n')):
-      print(f'{i}: {x}')
+      print(f'{x}')
 
   def run(self, quick):
     if self._check_ran() == False:
