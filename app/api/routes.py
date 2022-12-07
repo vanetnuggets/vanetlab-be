@@ -5,7 +5,7 @@ from app.managers.security import validate_scenario
 
 api = Blueprint('api', __name__)
 
-@api.route('/isalive')
+@api.route('/api/isalive')
 def isalive():
   return jsonify({
     "error": False,
@@ -13,8 +13,8 @@ def isalive():
   })
 
 
-@api.route('/trace', methods=['GET'])
-def trace():
+@api.route('/api/pcap', methods=['GET'])
+def get_pcap_logs():
   if 'name' not in request.args:
     return jsonify({
       "error": True,
@@ -32,26 +32,32 @@ def trace():
 
   return send_file(file)
 
+@api.route('/api/logs', methods=['GET'])
+def get_output_logs():
+  return "", 501
 
-@api.route('/tracejson', methods=['POST'])
+@api.route('/api/asciitrace', methods=['GET'])
+def get_ascii_trace():
+  return "", 501
+
+@api.route('/api/simulate', methods=['POST'])
 @validate_scenario
-def tracejson():
+def run_scenario():
   content = request.json
-  file = filemanager.save_json(content)
+  file, uuid = filemanager.save_json(content)
   if file is None:
     return jsonify({
       "error": True,
       "message": "could not save scenario."
     }), 204
   
-  ns3manager.load(file)
+  out, err = ns3manager.run(file, uuid)
   
-  out, err = ns3manager.run()
-  
-  logs = filemanager.get_logs()
+  logs = filemanager.get_logs(uuid)
 
   return jsonify({
     "error": False,
     "output": out,
+    "scenario_code": uuid,
     "logs": logs
   })
