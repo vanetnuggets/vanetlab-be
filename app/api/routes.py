@@ -1,7 +1,7 @@
 from flask import Blueprint, send_file, request, make_response, redirect, jsonify, render_template
 from app.managers.filemanager import filemanager
 from app.managers.ns3manager import ns3manager
-from app.managers.security import validate_scenario, validate_uuid
+from app.managers.security import validate_scenario, validate_code
 
 api = Blueprint('api', __name__)
 
