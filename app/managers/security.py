@@ -3,6 +3,9 @@ from functools import wraps
 from flask import request, jsonify
 import re
 
+reg_scenario = r'[a-zA-Z0-9_\.]*'
+reg_uuid = r'[a-zA-Z0-9\-]*'
+
 def flatten(x):
   result = []
   if isinstance(x, dict):
@@ -20,9 +23,8 @@ def validate_scenario(f):
     data = request.get_json()
     flat = flatten(data)
 
-    regex = r'[a-zA-Z0-9_\.]*'
     for elem in flat:
-      if re.fullmatch(regex, str(elem)) == None:
+      if re.fullmatch(reg_scenario, str(elem)) == None:
         return jsonify({
           "error": True, 
           "message": "Bad characters in input."
@@ -30,4 +32,8 @@ def validate_scenario(f):
     return f(*args, **kwargs)
   return wrapped
 
-
+# Return true if ok
+def validate_uuid(code):
+  if re.fullmatch(reg_uuid, code) == None:
+    return False
+  return True

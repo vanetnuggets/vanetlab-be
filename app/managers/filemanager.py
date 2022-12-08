@@ -7,7 +7,13 @@ import uuid
 class FileManager:
   def __init__(self):
     self.my_path = os.path.abspath('.')
-  
+
+  def delete_scenario(self, code):
+    try:
+      rmtree(f'{self.my_path}/scenarios/{code}')
+      return True
+    except OSError:
+      return False
   def move_output(self, waf_path, code):
     # Move all .pcap files
     for f in glob.glob(f'{waf_path}/*.pcap'):
@@ -22,8 +28,7 @@ class FileManager:
     # Ze setko ok abo co 
     return True
 
-
-  def get_logs(self, code):
+  def get_pcap_logs(self, code):
     fnames = []
     for f in glob.glob(f'scenarios/{code}/*.pcap'):
       filename = f.split('/')[-1].strip()
@@ -39,27 +44,6 @@ class FileManager:
       return None
     return f'{root}/scenarios/tmp/{filename}'
 
-  def load(self, file):
-    filename = file.filename
-
-    if filename == '':
-      return None, 'no file uploaded'
-    
-    if filename.split('.')[-1].strip() != 'py':
-      return None, "only accepts python ns3 scripts for now."
-
-    try:
-      rmtree('./scenarios/tmp/')
-      mkdir('./scenarios/tmp/')
-    
-    except OSError as e:
-      pass
-
-    file_path = './scenarios/tmp/' + filename
-
-    file.save(file_path)
-    return file_path, None
-  
   def save_json(self, json):
     code = str(uuid.uuid4())
     # Create simulation directory
