@@ -36,19 +36,9 @@ def get_output_logs():
   return "", 501
 
 @api.route('/info', methods=['GET'])
+@validate_code
 def get_info():
-  if 'code' not in request.args:
-    return jsonify({
-      "error": True,
-      "message": "code not specified"
-    })
-  
   code = request.args.get('code')
-  if validate_uuid(code) == False:
-    return jsonify({
-      "error": True,
-      "message": "wrong code format. dir traversal attempt?"
-    })
   data = filemanager.get_console_output(code)
   pcaps = filemanager.get_pcap_logs(code)
   return jsonify({
@@ -90,18 +80,9 @@ def run_scenario():
   })
 
 @api.route('/delete', methods=['DELETE'])
+@validate_code
 def delete_scenario():
-  if 'code' not in request.args:
-    return jsonify({
-      "error": True,
-      "message": "scenario code not specified."
-    })
   code = request.args.get('code')
-  if validate_uuid(code) == False:
-    return jsonify({
-      "error": True,
-      "message": "wrong code format. dir traversal attempt?"
-    })
   res = filemanager.delete_scenario(code)
   if res == True:
     return jsonify({

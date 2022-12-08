@@ -17,6 +17,13 @@ def flatten(x):
       result.append(el)
   return result
 
+# Return true if ok
+def validate_uuid(code):
+  if re.fullmatch(reg_uuid, code) == None:
+    return False
+  return True
+
+
 def validate_scenario(f):
   @wraps(f)
   def wrapped(*args, **kwargs):
@@ -32,8 +39,19 @@ def validate_scenario(f):
     return f(*args, **kwargs)
   return wrapped
 
-# Return true if ok
-def validate_uuid(code):
-  if re.fullmatch(reg_uuid, code) == None:
-    return False
-  return True
+def validate_code(f):
+  @wraps(f)
+  def wrapped(*args, **kwargs):
+    if 'code' not in request.args:
+      return jsonify({
+      "error": True,
+      "message": "scenario code not specified."
+    }), 400
+    code = request.args.get('code')
+    if validate_uuid(code) == False:
+      return jsonify({
+        "error": True,
+        "message": "wrong code format. dir traversal attempt?"
+      }), 400
+    return f(*args, **kwargs)
+  return wrapped
