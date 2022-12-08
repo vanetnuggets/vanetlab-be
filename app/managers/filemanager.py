@@ -14,6 +14,13 @@ class FileManager:
       return True
     except OSError:
       return False
+
+  def get_all_scenarios(self):
+    scenarios = []
+    for f in glob.glob(f'scenarios/*'):
+      scenarios.append(f.split('/')[-1])
+    return scenarios
+
   def move_output(self, waf_path, code):
     # Move all .pcap files
     for f in glob.glob(f'{waf_path}/*.pcap'):
@@ -27,6 +34,20 @@ class FileManager:
     
     # Ze setko ok abo co 
     return True
+
+  def save_console_output(self, code, out):
+    filename = f'{self.my_path}/scenarios/{code}/console.txt'
+    with open(filename, 'w') as f:
+      f.write(out)
+  
+  def get_console_output(self, code):
+    filename = f'{self.my_path}/scenarios/{code}/console.txt'
+    if os.path.isfile(filename) == False:
+      return None
+    
+    with open(filename, 'r') as f:
+      data = f.read()
+      return data
 
   def get_pcap_logs(self, code):
     fnames = []

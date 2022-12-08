@@ -12,7 +12,6 @@ def isalive():
     "isalive": True
   })
 
-
 @api.route('/pcap', methods=['GET'])
 def get_pcap_logs():
   if 'name' not in request.args:
@@ -35,6 +34,28 @@ def get_pcap_logs():
 @api.route('/logs', methods=['GET'])
 def get_output_logs():
   return "", 501
+
+@api.route('/info', methods=['GET'])
+def get_info():
+  if 'code' not in request.args:
+    return jsonify({
+      "error": True,
+      "message": "code not specified"
+    })
+  
+  code = request.args.get('code')
+  if validate_uuid(code) == False:
+    return jsonify({
+      "error": True,
+      "message": "wrong code format. dir traversal attempt?"
+    })
+  data = filemanager.get_console_output(code)
+  pcaps = filemanager.get_pcap_logs(code)
+  return jsonify({
+    "error": False,
+    "output": data,
+    "logs": pcaps
+  })
 
 @api.route('/asciitrace', methods=['GET'])
 def get_ascii_trace():
@@ -92,4 +113,9 @@ def delete_scenario():
       "message": f"scenario with code {code} does not exist"
     })
   
-  
+@api.route('/list', methods=['GET'])
+def get_scenarios():
+  return jsonify({
+    "error": False,
+    "scenarios": filemanager.get_all_scenarios()
+  })

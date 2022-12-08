@@ -16,7 +16,7 @@ class Ns3manager:
     # TODO niekedy v buducnosti... toto nie je skalovatelne, treba spravit nejaku priority queue, 
     #      ktora bude sem postupne hadzat scenare..
     # ?? jake formatovanie povedz
-    print('!!! RUNNING', file)
+
     process = Popen([
       self.waf_path+'/waf',
        '--pyrun', 
@@ -32,6 +32,9 @@ class Ns3manager:
     if b'successfully' in out:
       # Simulation output is written into stderr for some reason
       output = err.decode().strip().split('\n')
+
+      # move output
+      filemanager.save_console_output(uuid, '\n'.join(output))
 
       # move logs
       filemanager.move_output(self.waf_path, uuid)
