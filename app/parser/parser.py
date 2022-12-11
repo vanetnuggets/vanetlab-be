@@ -7,6 +7,7 @@ from app.parser.modules.log import log_parser, LogParser
 from app.parser.modules.final import final_parser, FinalParser
 from app.parser.modules.pcap import pcap_parser, PcapParser
 from app.parser.modules.wifi import WifiParser
+from app.parser.modules.helper import HelperParser
 
 import json
 
@@ -34,6 +35,8 @@ class Parser:
     self.final_parser.init(self)
     self.pcap_parser = PcapParser()
     self.pcap_parser.init(self)
+    self.helper_parser = HelperParser()
+    self.helper_parser.init(self)
 
   def add(self, item):
     self.buf += item
@@ -89,6 +92,11 @@ class Parser:
     pcap = self.pcap_parser.parse(data)
     self.add(pcap)
     
+    bulk_helper = self.helper_parser.parse_bulk(data)
+    self.add(bulk_helper)
+    sink_helper = self.helper_parser.parse_sink(data)
+    self.add(sink_helper)
+
     final = self.final_parser.parse(data)
     self.add(final)
 

@@ -1,0 +1,84 @@
+{
+    "topology": {
+        "node_count": 6,
+        "node_containers": [
+            "csma_nodes",
+            "p2p_nodes"
+        ],
+        "container_settings": {
+            "p2p_nodes": {
+                "id": 1,
+                "name": "p2p_nodes",
+                "type": "point_to_point",
+                "data_rate": {
+                    "value": 100,
+                    "format": "Mbps"
+                },
+                "delay": {
+                    "value": 1,
+                    "format": "ns"
+                },
+                "network_address": "10.2.2.0",
+                "network_mask": "255.255.255.0",
+                "log_pcap": true,
+                "nodes": [
+                    7,
+                    9
+                ]
+            },
+            "csma_nodes": {
+                "id": 0,
+                "name": "csma_nodes",
+                "type": "csma",
+                "data_rate": {
+                    "value": 100,
+                    "format": "Mbps"
+                },
+                "delay": {
+                    "value": 1,
+                    "format": "ns"
+                },
+                "network_address": "10.1.1.0",
+                "network_mask": "255.255.255.0",
+                "log_pcap": true,
+                "nodes": [
+                    2,
+                    3,
+                    4,
+                    7
+                ]
+            }
+        }
+    },
+    "simulation": {
+        "bulk_send_helper": {
+            "node_id": 1,
+            "network": "csma_nodes",
+            "name": "tst_node1",
+            "port": 22,
+            "max_byte": 100,
+            "start": {
+                "value": 1,
+                "format": "s"
+            },
+            "stop": {
+                "value": 10,
+                "format": "s"
+            }
+        },
+        "packer_sink_helper": {
+            "node_id": 2,
+            "network": "csma_nodes",
+            "name": "tst_node2",
+            "port": 88,
+            "start": {
+                "value": 0,
+                "format": "s"
+            },
+            "stop": {
+                "value": 10,
+                "format": "s"
+            }
+        }
+    }
+}

@@ -1,61 +1,102 @@
 from flask import Blueprint, send_file, request, make_response, redirect, jsonify, render_template
 from app.managers.filemanager import filemanager
 from app.managers.ns3manager import ns3manager
+from app.managers.security import validate_scenario, validate_code
 
 api = Blueprint('api', __name__)
 
 @api.route('/isalive')
 def isalive():
-  return jsonify({"islaive": True})
-
-@api.route('/', methods=['GET'])
-def index():
-  return render_template('upload.html')
-
-@api.route('/', methods=['POST'])
-def upload():
-  file = request.files['simulation']
-
-  file_path, err = filemanager.load(file)
-
-  if err != None:
-    return jsonify({"error": "yes", "reason": why}), 400
-  
-  ns3manager.load(file_path)
-
-  return render_template('upload.html')
-
-@api.route('/run', methods=['POST'])
-def run():
-  out, err = ns3manager.run()
-  
-  logs = filemanager.get_logs()
-
   return jsonify({
-    "output": out,
-    "logs": logs
+    "error": False,
+    "isalive": True
   })
 
-@api.route('/trace', methods=['GET'])
-def trace():
+@api.route('/pcap', methods=['GET'])
+def get_pcap_logs():
   if 'name' not in request.args:
-    return jsonify({}), 400
+    return jsonify({
+      "error": True,
+      "message": "File not specified"
+    }), 400
 
   name = request.args.get('name')
 
   file = filemanager.get_file(name)
   if file is None:
-    return jsonify({}), 204
+    return jsonify({
+      "error": True,
+      "message": "pcap not found"
+    }), 204
 
   return send_file(file)
 
-@api.route('/tracejson', methods=['POST'])
-def tracejson():
+@api.route('/logs', methods=['GET'])
+def get_output_logs():
+  return "", 501
+
+@api.route('/info', methods=['GET'])
+@validate_code
+def get_info():
+  code = request.args.get('code')
+  data = filemanager.get_console_output(code)
+  pcaps = filemanager.get_pcap_logs(code)
+  return jsonify({
+    "error": False,
+    "output": data,
+    "logs": pcaps
+  })
+
+@api.route('/asciitrace', methods=['GET'])
+def get_ascii_trace():
+  return "", 501
+
+@api.route('/simulate', methods=['POST'])
+@validate_scenario
+def run_scenario():
   content = request.json
-  print(content)
-  file = filemanager.save_json(content)
+  file, uuid = filemanager.save_json(content)
   if file is None:
-    return jsonify({}), 204
+    return jsonify({
+      "error": True,
+      "message": "could not save scenario."
+    }), 204
   
-  ns3manager.load(file)
-  return run()
+  out, err = ns3manager.run(file, uuid)
+  if err != None:
+    return jsonify({
+      "error": True,
+      "message": "error while running the simulation.",
+      "trace": out
+    })
+  
+  logs = filemanager.get_pcap_logs(uuid)
+
+  return jsonify({
+    "error": False,
+    "output": out,
+    "scenario_code": uuid,
+    "pcap_logs": logs
+  })
+
+@api.route('/delete', methods=['DELETE'])
+@validate_code
+def delete_scenario():
+  code = request.args.get('code')
+  res = filemanager.delete_scenario(code)
+  if res == True:
+    return jsonify({
+      "error": False
+    }), 204
+  else:
+    return jsonify({
+      "error": True,
+      "message": f"scenario with code {code} does not exist"
+    })
+  
+@api.route('/list', methods=['GET'])
+def get_scenarios():
+  return jsonify({
+    "error": False,
+    "scenarios": filemanager.get_all_scenarios()
+  })

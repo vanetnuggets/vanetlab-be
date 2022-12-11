@@ -1,59 +1,46 @@
 import os
 from subprocess import Popen, PIPE
+from app.managers.filemanager import filemanager
 import glob
+
 
 class Ns3manager:
   def __init__(self):
-    self.filename = ''
-    self.status = 'waiting'
     self.my_path = os.path.abspath('.')
-    
     if os.getenv('NS3_WAF_PATH') is None:
-      self.status = 'error'
       raise Exception('NS3_WAF_PATH environment variable not set.')
     else:
       self.waf_path = os.getenv('NS3_WAF_PATH')
 
-  def _check_status(self, needed=None):
-    if self.status == 'error':
-      return None, 'waf path not set'
-    if needed is not None and self.status != needed:
-      return None, 'wrong state'
+  def run(self, file, uuid):
+    # TODO niekedy v buducnosti... toto nie je skalovatelne, treba spravit nejaku priority queue, 
+    #      ktora bude sem postupne hadzat scenare..
+    # ?? jake formatovanie povedz
 
-  def load(self, file):
-    self._check_status()
-    
-    self.filename = file
-    self.status = 'loaded'
-  
-  def run(self):
-    # self._check_status('loaded')
-    process = Popen([self.waf_path+'/waf', '--pyrun', os.path.abspath(self.filename)], cwd=self.waf_path, stdout=PIPE, stderr=PIPE)
+    process = Popen([
+      self.waf_path+'/waf',
+       '--pyrun', 
+       os.path.abspath(file)
+      ], 
+       cwd=self.waf_path, 
+       stdout=PIPE, 
+       stderr=PIPE
+      )
     out, err = process.communicate()
 
-
+    # Asi return value by bolo lepsie kontrolovat ale nwm jak to vytiahnut takto z hlavy
     if b'successfully' in out:
       # Simulation output is written into stderr for some reason
       output = err.decode().strip().split('\n')
 
+      # move output
+      filemanager.save_console_output(uuid, '\n'.join(output))
+
       # move logs
-      for f in glob.glob(f'{self.waf_path}/*.pcap'):
-        filename = f.split('/')[-1].strip()
-        os.rename(f, f'{self.my_path}/scenarios/tmp/{filename}')
+      filemanager.move_output(self.waf_path, uuid)
 
       return output, None
     else:
       return [], err
-  
-  def get_pcap(self):
-    self._check_status('done')
-    pass
-  
-  def get_output(self):
-    self._check_status('done')
-    pass
-  
-  def status(self):
-    return self.status
 
 ns3manager = Ns3manager()
