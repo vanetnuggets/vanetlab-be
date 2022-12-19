@@ -41,10 +41,12 @@ def get_info():
   code = request.args.get('code')
   data = filemanager.get_console_output(code)
   pcaps = filemanager.get_pcap_logs(code)
+  source = filemanager.get_scenario_source(code)
   return jsonify({
     "error": False,
     "output": data,
-    "logs": pcaps
+    "logs": pcaps,
+    "source": source
   })
 
 @api.route('/asciitrace', methods=['GET'])
