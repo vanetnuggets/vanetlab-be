@@ -4,7 +4,8 @@ tests = []
 try:
   tests = [
     Test('./jsons/json_vojto.json', 'csma, udp'),
-    Test('./jsons/json_wifi.json', 'wifi')
+    Test('./jsons/json_wifi.json', 'wifi'),
+    Test('./jsons/json_samo.json', 'helper')
   ]
 except:
   print('[!] Please run this from ./tests directory.')
