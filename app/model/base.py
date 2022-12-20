@@ -19,6 +19,11 @@ class BaseModel:
       if val is None:
         missing.append(x)
     return missing    
+  
+  def add_imports(self, arr):
+    for imp in self.imports:
+      if self.parser.daddy.check_import(imp) == False:
+        add(arr, imp)
 
   def add_imports(self, arr):
     for imp in self.imports:
