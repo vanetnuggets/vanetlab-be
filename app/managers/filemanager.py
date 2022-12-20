@@ -48,6 +48,13 @@ class FileManager:
     with open(filename, 'r') as f:
       data = f.read()
       return data
+  
+  def get_scenario_source(self, code):
+    filename = f'{self.my_path}/scenarios/{code}/scenario.py'
+    scenario = ""
+    with open(filename, 'r') as f:
+      scenario = f.read()
+    return scenario    
 
   def get_pcap_logs(self, code):
     fnames = []
@@ -59,11 +66,11 @@ class FileManager:
       })
     return fnames
 
-  def get_file(self, filename):
+  def get_file(self, filename, code):
     root = os.path.abspath('.')
-    if os.path.isfile(f'{root}/scenarios/tmp/{filename}') is False:
+    if os.path.isfile(f'{root}/scenarios/{code}/{filename}') is False:
       return None
-    return f'{root}/scenarios/tmp/{filename}'
+    return f'{root}/scenarios/{code}/{filename}'
 
   def save_json(self, json):
     code = str(uuid.uuid4())

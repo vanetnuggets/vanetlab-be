@@ -13,6 +13,7 @@ def isalive():
   })
 
 @api.route('/pcap', methods=['GET'])
+@validate_code
 def get_pcap_logs():
   if 'name' not in request.args:
     return jsonify({
@@ -21,8 +22,9 @@ def get_pcap_logs():
     }), 400
 
   name = request.args.get('name')
+  code = request.args.get('code')
 
-  file = filemanager.get_file(name)
+  file = filemanager.get_file(name, code)
   if file is None:
     return jsonify({
       "error": True,
@@ -41,10 +43,12 @@ def get_info():
   code = request.args.get('code')
   data = filemanager.get_console_output(code)
   pcaps = filemanager.get_pcap_logs(code)
+  source = filemanager.get_scenario_source(code)
   return jsonify({
     "error": False,
     "output": data,
-    "logs": pcaps
+    "logs": pcaps,
+    "source": source
   })
 
 @api.route('/asciitrace', methods=['GET'])
