@@ -2,6 +2,7 @@ from flask import Blueprint, send_file, request, make_response, redirect, jsonif
 from app.managers.filemanager import filemanager
 from app.managers.ns3manager import ns3manager
 from app.managers.security import validate_scenario, validate_code
+from app.managers.tcl_parser import TclParser
 
 api = Blueprint('api', __name__)
 
@@ -104,3 +105,10 @@ def get_scenarios():
     "error": False,
     "scenarios": filemanager.get_all_scenarios()
   })
+
+@api.route('/tcl', methods=['POST'])
+def tcl():
+  txt = request.get_json()
+  print(txt['data'])
+  return jsonify({})
+  # return TclParser()
