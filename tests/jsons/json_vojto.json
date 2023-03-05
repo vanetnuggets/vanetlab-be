@@ -50,6 +50,7 @@
     "server": {
       "echo_server": {
         "id": 0,
+        "type": "echo_server",
         "name": "echo_server",
         "port": 9,
         "start": {
@@ -67,6 +68,7 @@
     "client": {
       "echo_client": {
         "id": 0,
+        "type": "echo_client",
         "name": "echo_client",
         "port": 9,
         "start": {

@@ -3,44 +3,68 @@ from subprocess import Popen, PIPE
 from app.managers.filemanager import filemanager
 import glob
 
-
 class Ns3manager:
   def __init__(self):
     self.my_path = os.path.abspath('.')
-    if os.getenv('NS3_WAF_PATH') is None:
-      raise Exception('NS3_WAF_PATH environment variable not set.')
+    if os.getenv('NS3_PATH') is None:
+      raise Exception('NS3_PATH environment variable not set.')
     else:
-      self.waf_path = os.getenv('NS3_WAF_PATH')
+      self.ns3_path = os.getenv('NS3_PATH')
 
-  def run(self, file, uuid):
-    # TODO niekedy v buducnosti... toto nie je skalovatelne, treba spravit nejaku priority queue, 
-    #      ktora bude sem postupne hadzat scenare..
-    # ?? jake formatovanie povedz
+    if os.getenv('NS3_SCENARIO_PATH') is None:
+      raise Exception('NS3_SCENARIO_PATH environment variable not set')
+    else:
+      self.ns3_scenario = os.getenv('NS3_SCENARIO_PATH')
 
+    if os.getenv('SUMO_TRACE_EXPORTER') is None:
+      raise Exception('SUMO_TRACE_EXPORTER environment variable not set')
+    else:
+      self.sumo_trace = os.getenv('SUMO_TRACE_EXPORTER')
+    
+  def generate_ns2_mobility(self, name):
     process = Popen([
-      self.waf_path+'/waf',
-       '--pyrun', 
-       os.path.abspath(file)
-      ], 
-       cwd=self.waf_path, 
-       stdout=PIPE, 
-       stderr=PIPE
-      )
+      f'{self.sumo_trace}',
+      '--fcd-input',
+      f'{self.my_path}/scenarios/{name}/sumoTrace.xml',
+      '--ns2mobility-output',
+      f'{self.my_path}/scenarios/{name}/mobility.tcl'
+    ], 
+      stdout=PIPE,
+      stderr=PIPE 
+    )
+    out, err = process.communicate()
+    
+    if process.returncode == 0:
+      return True
+    return False
+  
+  def simulate(self, name):
+    process = Popen([
+      f'{self.ns3_path}/ns3',
+      'run',
+      f'" {self.ns3_scenario} --config={self.my_path}/scenarios/{name}/config.json --mobility={self.my_path}/scenarios/{name}/mobility.tcl --traceloc={self.my_path}/scenarios/{name}"'
+    ],
+      cwd=self.ns3_path,
+      stdout=PIPE,
+      stderr=PIPE
+    )
+    out, err = process.communicate()
+    return err.decode().split('\n')
+  
+  def validate(self, name):
+    process = Popen([
+      f'{self.ns3_path}/ns3',
+      'run',
+      f'" {self.ns3_scenario} --config={self.my_path}/scenarios/{name}/config.json --mobility={self.my_path}/scenarios/{name}/mobility.tcl --traceloc={self.my_path}/scenarios/{name} --validate=1"'
+    ],
+      cwd=self.ns3_path,
+      stdout=PIPE,
+      stderr=PIPE
+    )
     out, err = process.communicate()
 
-    # Asi return value by bolo lepsie kontrolovat ale nwm jak to vytiahnut takto z hlavy
-    if b'successfully' in out:
-      # Simulation output is written into stderr for some reason
-      output = err.decode().strip().split('\n')
-
-      # move output
-      filemanager.save_console_output(uuid, '\n'.join(output))
-
-      # move logs
-      filemanager.move_output(self.waf_path, uuid)
-
-      return output, None
-    else:
-      return [], err
+    if process.returncode == 0:
+      return None
+    return err.decode()
 
 ns3manager = Ns3manager()

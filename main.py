@@ -13,4 +13,5 @@ if os.getenv('VANETLAB_BE_PORT') is not None:
 if os.getenv('VANETLAB_BE_HOST') is not None:
   host = os.getenv('VANETLAB_BE_HOST')
 
-app.run(host=host, port=port, debug=False, use_evalex=False)
+if __name__ == '__main__':
+  app.run(host=host, port=port, debug=False, use_evalex=False)

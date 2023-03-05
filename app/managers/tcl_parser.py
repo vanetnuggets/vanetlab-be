@@ -10,29 +10,14 @@ X = 'x'
 Y = 'y'
 Z = 'z'
 
-
 class TclParser():
     def __init__(self) -> None:
         # TODO toto sa este naplni ked sa finishne endpoint
         pass
 
-    def tcl_to_conf(self) -> dict:
-        # CONF FORMAT
-        # {'max_at': 204.0,
-        #  'nodes': {0: {'mobility': {1.0: {'x': 788.85, 'y': 1617.11, 'z': 0.0},
-        #                         2.0: {'x': 787.53, 'y': 1614.89, 'z': 2.58},
-        #                         3.0: {'x': 784.92, 'y': 1610.5, 'z': 5.11}
-        #                         }
-        #                 }
-        #            1: {'mobility': {1.0: {'x': 395.63, 'y': 1016.24, 'z': 0.0},
-        #                         2.0: {'x': 397.75, 'y': 1014.94, 'z': 2.49}
-        #                         }
-        #                 }
-        #            }
-        # }
-        
+    def tcl_to_conf(self, mobility_path) -> dict:
         conf = {NODES: {}, MAX_AT: 0}
-        with open(PATH) as f:
+        with open(mobility_path) as f:
             reg_ns = r"\$ns_"
             reg_node = r"\$node_\((\d+)\)"
             max_at = 0
@@ -72,8 +57,4 @@ class TclParser():
                         used_nodes[node_num] = False
                     print(f'$ns_ at {at} "$node_({node_num}) setdest {data[at][X]} {data[at][Y]} {data[at][Z]}"')
 
-
-# TEST
-# p = TclParser()
-# conf = p.tcl_to_conf()
-# p.conf_to_tcl(conf)
+tcl_parser = TclParser()

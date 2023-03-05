@@ -1,8 +1,7 @@
 from flask import Blueprint, send_file, request, make_response, redirect, jsonify, render_template
+from app.managers.tcl_parser import tcl_parser
 from app.managers.filemanager import filemanager
 from app.managers.ns3manager import ns3manager
-from app.managers.security import validate_scenario, validate_code
-from app.managers.tcl_parser import TclParser
 
 api = Blueprint('api', __name__)
 
@@ -13,102 +12,56 @@ def isalive():
     "isalive": True
   })
 
-@api.route('/pcap', methods=['GET'])
-@validate_code
-def get_pcap_logs():
-  if 'name' not in request.args:
-    return jsonify({
-      "error": True,
-      "message": "File not specified"
-    }), 400
+@api.route('/from-sumo', methods=['POST'])
+def from_sumo():
+  data = dict(request.form)
+  print(data)
 
-  name = request.args.get('name')
-  code = request.args.get('code')
+  name = data['name']
+  trace_file = request.files['sumotrace']
+  
+  filemanager.create_scenario(name)
+  filemanager.save_sumo(name, trace_file)
 
-  file = filemanager.get_file(name, code)
-  if file is None:
-    return jsonify({
-      "error": True,
-      "message": "pcap not found"
-    }), 204
+  ns3manager.generate_ns2_mobility(name)
 
-  return send_file(file)
+  conf = tcl_parser.tcl_to_conf(filemanager.get_ns2tcl(name))
+  filemanager.save_conf(name, conf)
 
-@api.route('/logs', methods=['GET'])
-def get_output_logs():
-  return "", 501
+  return conf, 201
 
-@api.route('/info', methods=['GET'])
-@validate_code
-def get_info():
-  code = request.args.get('code')
-  data = filemanager.get_console_output(code)
-  pcaps = filemanager.get_pcap_logs(code)
-  source = filemanager.get_scenario_source(code)
+@api.route('/simulate/<name>', methods=['POST'])
+def simulate(name):
+  res = ns3manager.simulate(name)
+  
   return jsonify({
     "error": False,
-    "output": data,
-    "logs": pcaps,
-    "source": source
-  })
+    "data": res
+  }), 400
 
-@api.route('/asciitrace', methods=['GET'])
-def get_ascii_trace():
-  return "", 501
+@api.route('/validate/<name>', methods=['POST'])
+def test_scenario(name):
+  err = ns3manager.validate(name)
 
-@api.route('/simulate', methods=['POST'])
-@validate_scenario
-def run_scenario():
-  content = request.json
-  file, uuid = filemanager.save_json(content)
-  if file is None:
+  if err == None:
     return jsonify({
-      "error": True,
-      "message": "could not save scenario."
-    }), 204
+      "error": False,
+      "data": None
+    }), 200
   
-  out, err = ns3manager.run(file, uuid)
-  if err != None:
-    return jsonify({
-      "error": True,
-      "message": "error while running the simulation.",
-      "trace": out
-    })
-  
-  logs = filemanager.get_pcap_logs(uuid)
-
   return jsonify({
-    "error": False,
-    "output": out,
-    "scenario_code": uuid,
-    "pcap_logs": logs
-  })
+    "error": True,
+    "data": err
+  }), 400
 
-@api.route('/delete', methods=['DELETE'])
-@validate_code
-def delete_scenario():
-  code = request.args.get('code')
-  res = filemanager.delete_scenario(code)
-  if res == True:
-    return jsonify({
-      "error": False
-    }), 204
-  else:
-    return jsonify({
-      "error": True,
-      "message": f"scenario with code {code} does not exist"
-    })
-  
+@api.route('/netanim-trace/<name>', methods=['GET'])
+def get_trace(name):
+  path = filemanager.get_netanim_trace(name)
+  return send_file(path)
+
 @api.route('/list', methods=['GET'])
 def get_scenarios():
   return jsonify({
     "error": False,
-    "scenarios": filemanager.get_all_scenarios()
+    "data": filemanager.get_all_scenarios()
   })
-
-@api.route('/tcl', methods=['POST'])
-def tcl():
-  txt = request.get_json()
-  print(txt['data'])
-  return jsonify({})
-  # return TclParser()
