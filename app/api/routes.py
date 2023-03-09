@@ -15,11 +15,10 @@ def isalive():
 @api.route('/from-sumo', methods=['POST'])
 def from_sumo():
   data = dict(request.form)
-  print(data)
 
   name = data['name']
   trace_file = request.files['sumotrace']
-  
+
   filemanager.create_scenario(name)
   filemanager.save_sumo(name, trace_file)
 
@@ -65,3 +64,19 @@ def get_scenarios():
     "error": False,
     "data": filemanager.get_all_scenarios()
   })
+
+@api.route('/scenario/<name>', methods=['GET'])
+def get_scenario(name):
+  config = {}
+  try:
+    config = filemanager.get_config(name)
+  except Exception as e:
+    return jsonify({
+      "error": True,
+      "message": "remote scenario does not exist."
+    }), 404
+  
+  return jsonify({
+    "error": False,
+    "data": config
+  }), 200

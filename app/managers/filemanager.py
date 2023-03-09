@@ -40,7 +40,18 @@ class FileManager:
   def get_all_scenarios(self):
     scenarios = []
     for f in glob.glob(f'{self.my_path}/scenarios/*'):
-      scenarios.append(f.split('/')[-1])
+      for ff in glob.glob(f'{f}/*'):
+        if ff.split('/')[-1] == 'config.json':
+          scenarios.append(f.split('/')[-1])
     return scenarios
+  
+  def get_config(self, name):
+
+    path = f'{self.path(name)}/config.json'
+    data = ""
+    with open(path, 'r') as f:
+      data = f.read()
+    config = json.loads(data)
+    return config
 
 filemanager = FileManager()
