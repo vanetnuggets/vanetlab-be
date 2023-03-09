@@ -65,7 +65,32 @@ def get_scenarios():
     "data": filemanager.get_all_scenarios()
   })
 
-@api.route('/scenario/<name>', methods=['GET'])
+@api.route('/scenario/<name>', methods=['GET', 'POST'])
+def scenario(name):
+  if request.method == 'GET':
+    return get_scenario(name)
+  
+  if request.method == 'POST':
+    return post_scenario(name)
+
+@api.route('/exists/<name>', methods=['GET'])
+def exists_scenario(name):
+  res = filemanager.exists_scenario(name)
+  return({
+    "error": False,
+    "exists": res
+  });
+
+
+
+def post_scenario(name):
+  data = request.get_json()
+  filemanager.save_conf(name, data)
+  return jsonify({
+    "error": False,
+    "name": name
+  }), 201
+
 def get_scenario(name):
   config = {}
   try:

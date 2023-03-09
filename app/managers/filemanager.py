@@ -45,6 +45,13 @@ class FileManager:
           scenarios.append(f.split('/')[-1])
     return scenarios
   
+  def exists_scenario(self, name):
+    for f in glob.glob(f'{self.my_path}/scenarios/*'):
+      scenario = f.split('/')[-1]
+      if scenario == name:
+        return True
+    return False
+  
   def get_config(self, name):
 
     path = f'{self.path(name)}/config.json'
