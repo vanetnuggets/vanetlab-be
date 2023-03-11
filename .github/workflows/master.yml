@@ -1,0 +1,25 @@
+name: BE_update
+
+on:
+  push:
+    branches: [ "master" ]
+  
+  # Manual button
+  workflow_dispatch:
+
+jobs:
+  # Job
+  build:
+    runs-on: ubuntu-latest
+
+    # Tasks
+    steps:
+    - name: updating backend via ssh
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USER }}
+        key: ${{ secrets.KEY }}
+        port: ${{ secrets.PORT }}
+        timeout: 10s
+        script: bash ~/update_be.sh
