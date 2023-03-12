@@ -45,6 +45,7 @@ class TclParser():
                         self._init_node(conf, node_num)
                     conf[NODES][node_num][MOBILITY][at] = {X: x, Y: y, Z: z}
             conf[MAX_AT] = max_at
+            conf['networks'] = {}
             # pprint.pprint(conf)
         return conf
 
