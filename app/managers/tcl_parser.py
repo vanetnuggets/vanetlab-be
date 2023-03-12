@@ -1,7 +1,5 @@
 import re
-import pprint
 
-PATH = 'C:/Users/PC/Downloads/Export kodov z GitHub/TP_FIIT-main/Sumo_to_NS3_using_NS2/ns2mobility.tcl'
 MOBILITY = 'mobility'
 AT = 'at'
 MAX_AT = 'max_at'
@@ -46,7 +44,6 @@ class TclParser():
                     conf[NODES][node_num][MOBILITY][at] = {X: x, Y: y, Z: z}
             conf[MAX_AT] = max_at
             conf['networks'] = {}
-            # pprint.pprint(conf)
         return conf
 
     def conf_to_tcl(self, conf):
