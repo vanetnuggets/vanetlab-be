@@ -24,6 +24,7 @@ class Ns3manager:
     
   def generate_ns2_mobility(self, name):
     process = Popen([
+      'python',
       f'{self.sumo_trace}',
       '--fcd-input',
       l(f'{self.my_path}/scenarios/{name}/sumoTrace.xml'),
@@ -33,6 +34,7 @@ class Ns3manager:
       stdout=PIPE,
       stderr=PIPE 
     )
+
     out, err = process.communicate()
     
     if process.returncode == 0:
