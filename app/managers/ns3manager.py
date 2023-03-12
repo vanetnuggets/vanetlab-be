@@ -1,6 +1,7 @@
 import os
 from subprocess import Popen, PIPE
 from app.managers.filemanager import filemanager
+from app.managers.osmanager import l
 import glob
 
 class Ns3manager:
@@ -25,9 +26,9 @@ class Ns3manager:
     process = Popen([
       f'{self.sumo_trace}',
       '--fcd-input',
-      f'{self.my_path}/scenarios/{name}/sumoTrace.xml',
+      l(f'{self.my_path}/scenarios/{name}/sumoTrace.xml'),
       '--ns2mobility-output',
-      f'{self.my_path}/scenarios/{name}/mobility.tcl'
+      l(f'{self.my_path}/scenarios/{name}/mobility.tcl')
     ], 
       stdout=PIPE,
       stderr=PIPE 
@@ -40,9 +41,9 @@ class Ns3manager:
   
   def simulate(self, name):
     process = Popen([
-      f'{self.ns3_path}/ns3',
+      l(f'{self.ns3_path}/ns3'),
       'run',
-      f'" {self.ns3_scenario} --config={self.my_path}/scenarios/{name}/config.json --mobility={self.my_path}/scenarios/{name}/mobility.tcl --traceloc={self.my_path}/scenarios/{name}"'
+      l(f'" {self.ns3_scenario} --config={self.my_path}/scenarios/{name}/config.json --mobility={self.my_path}/scenarios/{name}/mobility.tcl --traceloc={self.my_path}/scenarios/{name}"')
     ],
       cwd=self.ns3_path,
       stdout=PIPE,
@@ -53,9 +54,9 @@ class Ns3manager:
   
   def validate(self, name):
     process = Popen([
-      f'{self.ns3_path}/ns3',
+      l(f'{self.ns3_path}/ns3'),
       'run',
-      f'" {self.ns3_scenario} --config={self.my_path}/scenarios/{name}/config.json --mobility={self.my_path}/scenarios/{name}/mobility.tcl --traceloc={self.my_path}/scenarios/{name} --validate=1"'
+      l(f'" {self.ns3_scenario} --config={self.my_path}/scenarios/{name}/config.json --mobility={self.my_path}/scenarios/{name}/mobility.tcl --traceloc={self.my_path}/scenarios/{name} --validate=1"')
     ],
       cwd=self.ns3_path,
       stdout=PIPE,
