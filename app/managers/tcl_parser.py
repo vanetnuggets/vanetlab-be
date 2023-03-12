@@ -11,9 +11,18 @@ Y = 'y'
 Z = 'z'
 
 class TclParser():
-    def __init__(self) -> None:
-        # TODO toto sa este naplni ked sa finishne endpoint
+    def __init__(self):
         pass
+    
+    def _init_node(self, config, node_num):
+        config[NODES][node_num] = {}
+        config[NODES][node_num]['id'] = node_num
+        config[NODES][node_num]['l2id'] = -1
+        config[NODES][node_num]['l2'] = None
+        config[NODES][node_num]['l2conf'] = {}
+        config[NODES][node_num]['l3'] = None
+        config[NODES][node_num]['l3conf'] = {}
+        config[NODES][node_num]['mobility'] = {}
 
     def tcl_to_conf(self, mobility_path) -> dict:
         conf = {NODES: {}, MAX_AT: 0}
@@ -33,8 +42,7 @@ class TclParser():
                     z = float(sp[7].replace('"', ''))
 
                     if node_num not in conf[NODES].keys():
-                        conf[NODES][node_num] = {}
-                        conf[NODES][node_num][MOBILITY] = {}
+                        self._init_node(conf, node_num)
                     conf[NODES][node_num][MOBILITY][at] = {X: x, Y: y, Z: z}
             conf[MAX_AT] = max_at
             # pprint.pprint(conf)
