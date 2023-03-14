@@ -23,6 +23,8 @@ class TclParser():
         config[NODES][node_num]['l3'] = None
         config[NODES][node_num]['l3conf'] = {}
         config[NODES][node_num]['mobility'] = {}
+        config[NODES][node_num]['x'] = None
+        config[NODES][node_num]['y'] = None
 
     def tcl_to_conf(self, mobility_path) -> dict:
         conf = {NODES: {}, MAX_AT: 0}
@@ -30,11 +32,12 @@ class TclParser():
             reg_ns = r"\$ns_"
             reg_node = r"\$node_\((\d+)\)"
             max_at = 0
+            min_at = 99999999999
             for line in f.readlines():
                 if re.search(reg_ns, line):
                     sp = line.split()
                     at = float(sp[2])
-                    if max_at < at : max_at = at 
+                    if max_at < at : max_at = at
                     
                     node_num = int(re.search(reg_node, sp[3]).group(1))
                     x = float(sp[5])
@@ -44,6 +47,11 @@ class TclParser():
                     if node_num not in conf[NODES].keys():
                         self._init_node(conf, node_num)
                     conf[NODES][node_num][MOBILITY][at] = {X: x, Y: y, Z: z}
+                    
+                    if min_at > at:
+                        min_at = at 
+                        conf[NODES][node_num][X] = x
+                        conf[NODES][node_num][Y] = y
             conf[MAX_AT] = max_at
             conf['networks'] = {}
         return conf
