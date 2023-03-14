@@ -33,7 +33,8 @@ def from_sumo():
 def simulate(name):
   conf = request.get_json()
   tcl_parser.conf_to_tcl(name, conf)
-  
+  filemanager.save_conf(name)
+  ns3manager.simulate(name)
   return jsonify({
     "error": False,
     "data": None
