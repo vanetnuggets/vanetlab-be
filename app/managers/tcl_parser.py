@@ -1,4 +1,6 @@
 import re
+from app.managers.filemanager import filemanager
+
 
 MOBILITY = 'mobility'
 AT = 'at'
@@ -46,21 +48,23 @@ class TclParser():
             conf['networks'] = {}
         return conf
 
-    def conf_to_tcl(self, conf):
-        # TODO replace prints with file writeline
+    def conf_to_tcl(self, name, conf):
+        lines = []
         node_nums = list(conf[NODES].keys())
         # dict used to determine if node x, y, z is needed to print
         used_nodes = {num: True for num in node_nums}
-        for at in range(int(conf[MAX_AT]) + 1):
+        # TODO tu vymenit 10 zo koment ak budeme mat max cas, ak n tak treba iba vypocitat
+        for at in range(10): # int(conf[MAX_AT]) + 1
             for node_num in node_nums:
                 data = conf[NODES][node_num][MOBILITY]
-                at = float(at)
+                at = str(at)
                 if at in data:
                     if used_nodes[node_num]:
-                        print(f'$node_({node_num}) set X_ {data[at][X]}')
-                        print(f'$node_({node_num}) set Y_ {data[at][Y]}')
-                        print(f'$node_({node_num}) set Z_ {data[at][Z]}')
+                        lines.append(f'$node_({node_num}) set X_ {data[at][X]}')
+                        lines.append(f'$node_({node_num}) set Y_ {data[at][Y]}')
+                        lines.append(f'$node_({node_num}) set Z_ {data[at][Z]}')
                         used_nodes[node_num] = False
-                    print(f'$ns_ at {at} "$node_({node_num}) setdest {data[at][X]} {data[at][Y]} {data[at][Z]}"')
+                    lines.append(f'$ns_ at {at} "$node_({node_num}) setdest {data[at][X]} {data[at][Y]} {data[at][Z]}"')
+        filemanager.save_tcl(name, lines)
 
 tcl_parser = TclParser()

@@ -31,6 +31,12 @@ class FileManager:
     with open(path, 'w') as f:
       json.dump(conf, f, indent=2) 
     return True
+  
+  def save_tcl(self, name, lines):
+    path = l(f'{self.path(name)}/mobility.tcl')
+    with open(path, 'w') as f:
+      f.writelines(lines)
+    return True
 
   def get_ns2tcl(self, name):
     return l(f'{self.path(name)}/mobility.tcl')
