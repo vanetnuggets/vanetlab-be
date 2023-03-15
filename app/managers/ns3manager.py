@@ -58,7 +58,8 @@ class Ns3manager:
     if process.returncode == 0:
       filemanager.save_stdout(name, data)
       return None
-    return err.decode()
+    
+    return err.decode() + out.decode()
   
   def validate(self, name):
     process = Popen([

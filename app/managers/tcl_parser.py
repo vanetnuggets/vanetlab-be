@@ -1,6 +1,6 @@
 import re
 from app.managers.filemanager import filemanager
-
+from pprint import pprint
 
 MOBILITY = 'mobility'
 AT = 'at'
@@ -63,11 +63,10 @@ class TclParser():
         node_nums = list(conf[NODES].keys())
         # dict used to determine if node x, y, z is needed to print
         used_nodes = {num: True for num in node_nums}
-        # TODO tu vymenit 10 zo koment ak budeme mat max cas, ak n tak treba iba vypocitat
-        for at in range(10): # int(conf[MAX_AT]) + 1
+        for at in range(int(conf[MAX_AT]+1)):
             for node_num in node_nums:
                 data = conf[NODES][node_num][MOBILITY]
-                at = str(at)
+                at = str(float(at))
                 if at in data:
                     if used_nodes[node_num]:
                         lines.append(f'$node_({node_num}) set X_ {data[at][X]}')

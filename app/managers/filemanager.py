@@ -36,7 +36,7 @@ class FileManager:
   def save_tcl(self, name, lines):
     path = l(f'{self.path(name)}/mobility.tcl')
     with open(path, 'w') as f:
-      f.writelines(lines)
+      f.write('\n'.join(lines))
     return True
 
   def get_ns2tcl(self, name):
@@ -71,7 +71,7 @@ class FileManager:
     return config
   
   def save_stdout(self, name, data):
-    path = l(f'{self.path(name)/output.txt}')
+    path = l(f'{self.path(name)}/output.txt')
     with open(path, 'w') as f:
       f.write('\n'.join(data))
     return
