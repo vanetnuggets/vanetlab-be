@@ -42,6 +42,10 @@ class Ns3manager:
     return False
   
   def simulate(self, name):
+    err = self.validate(name)
+    if err != None:
+      return err
+    
     process = Popen([
       l(f'{self.ns3_path}/ns3'),
       'run',
@@ -54,13 +58,9 @@ class Ns3manager:
     out, err = process.communicate()
 
     data = err.decode().split('\n')
+    filemanager.save_stdout(name, data)
+    return None
     
-    if process.returncode == 0:
-      filemanager.save_stdout(name, data)
-      return None
-    
-    return err.decode() + out.decode()
-  
   def validate(self, name):
     process = Popen([
       l(f'{self.ns3_path}/ns3'),
