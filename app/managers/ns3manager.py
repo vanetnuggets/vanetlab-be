@@ -52,7 +52,13 @@ class Ns3manager:
       stderr=PIPE
     )
     out, err = process.communicate()
-    return err.decode().split('\n')
+
+    data = err.decode().split('\n')
+    
+    if process.returncode == 0:
+      filemanager.save_stdout(name, data)
+      return None
+    return err.decode()
   
   def validate(self, name):
     process = Popen([
@@ -68,6 +74,6 @@ class Ns3manager:
 
     if process.returncode == 0:
       return None
-    return err.decode()
+    return err.decode() + out.decode()
 
 ns3manager = Ns3manager()

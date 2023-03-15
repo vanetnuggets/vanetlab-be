@@ -19,7 +19,14 @@ def from_sumo():
   name = data['name']
   trace_file = request.files['sumotrace']
 
-  filemanager.create_scenario(name)
+  ok = filemanager.create_scenario(name)
+  
+  if ok == False:
+    return jsonify({
+      "error": True,
+      "data": f"scenario with named {name} already exists."
+    }), 400
+
   filemanager.save_sumo(name, trace_file)
 
   ns3manager.generate_ns2_mobility(name)
@@ -33,16 +40,27 @@ def from_sumo():
 def simulate(name):
   conf = request.get_json()
   tcl_parser.conf_to_tcl(name, conf)
-  filemanager.save_conf(name)
-  ns3manager.simulate(name)
+  filemanager.save_conf(name, conf)
+  err = ns3manager.simulate(name)
+  
+  if err == None:
+    return jsonify({
+      "error": False,
+      "data": None
+    }), 200
+  
   return jsonify({
-    "error": False,
-    "data": None
-  }), 200
+    "error": True,
+    "data": err
+  }), 400
 
 
 @api.route('/validate/<name>', methods=['POST'])
 def test_scenario(name):
+  conf = request.get_json()
+  tcl_parser.conf_to_tcl(name, conf)
+  filemanager.save_conf(name, conf)
+
   err = ns3manager.validate(name)
 
   if err == None:
@@ -81,7 +99,7 @@ def exists_scenario(name):
   res = filemanager.exists_scenario(name)
   return({
     "error": False,
-    "exists": res
+    "data": res
   })
 
 

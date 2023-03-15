@@ -27,6 +27,7 @@ class FileManager:
     return True
   
   def save_conf(self, name, conf):
+    self.create_scenario(name)
     path = l(f'{self.path(name)}/config.json')
     with open(path, 'w') as f:
       json.dump(conf, f, indent=2) 
@@ -68,5 +69,11 @@ class FileManager:
       data = f.read()
     config = json.loads(data)
     return config
+  
+  def save_stdout(self, name, data):
+    path = l(f'{self.path(name)/output.txt}')
+    with open(path, 'w') as f:
+      f.write('\n'.join(data))
+    return
 
 filemanager = FileManager()

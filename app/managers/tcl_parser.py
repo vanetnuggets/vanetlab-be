@@ -32,7 +32,8 @@ class TclParser():
             reg_ns = r"\$ns_"
             reg_node = r"\$node_\((\d+)\)"
             max_at = 0
-            min_at = 99999999999
+            min_at = {}
+            min_nums = {}
             for line in f.readlines():
                 if re.search(reg_ns, line):
                     sp = line.split()
@@ -46,10 +47,11 @@ class TclParser():
 
                     if node_num not in conf[NODES].keys():
                         self._init_node(conf, node_num)
+                    
                     conf[NODES][node_num][MOBILITY][at] = {X: x, Y: y, Z: z}
                     
-                    if min_at > at:
-                        min_at = at 
+                    if node_num not in min_at or min_at[node_num] > at:
+                        min_at[node_num] = at 
                         conf[NODES][node_num][X] = x
                         conf[NODES][node_num][Y] = y
             conf[MAX_AT] = max_at
