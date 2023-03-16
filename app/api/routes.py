@@ -36,6 +36,29 @@ def from_sumo():
 
   return conf, 201
 
+@api.route('/get/<name>/<file>', methods=['GET'])
+def get_file(name, file):
+  file_path = None
+  if file == 'output':
+    file_path = filemanager.get_file(name, 'output.txt')
+
+  elif file == 'mobility':
+    file_path= filemanager.get_file(name, 'mobility.tcl')
+    
+  elif file == 'trace':
+    file_path = filemanager.get_file(name, 'trace.xml')
+
+  elif file == 'config':
+    file_path = filemanager.get_file(name, 'config.json')
+    
+  if file_path:
+    return send_file(file_path)
+  
+  return jsonify({
+    'error': True,
+    'data': 'scenario or file does not exist. ensure you ran the simulation.' 
+  }), 400
+
 @api.route('/simulate/<name>', methods=['POST'])
 def simulate(name):
   filemanager.create_scenario(name)
@@ -45,10 +68,12 @@ def simulate(name):
   filemanager.save_conf(name, conf)
   err = ns3manager.simulate(name)
   
+  summary = filemanager.summary(name)
+
   if err == None:
     return jsonify({
       "error": False,
-      "data": None
+      "data": summary
     }), 200
   
   return jsonify({

@@ -12,6 +12,27 @@ class FileManager:
 
   def path(self, name):
     return l(f'{self.my_path}/scenarios/{name}')
+  
+  def size(self, name, file):
+    return os.path.getsize(l(f'{self.path(name)}/{file}'))
+
+  def summary(self, name):
+    summ = {}
+    summ['mobility'] = {
+      'name': 'mobility.tcl',
+      'size': self.size(name, 'mobility.tcl')
+    }
+
+    summ['output'] = {
+      'name': 'output.txt',
+      'size': self.size(name, 'output.txt')
+    }
+
+    summ['trace'] = {
+      'name': 'trace.xml',
+      'size': self.size(name, 'trace.xml')
+    }
+    return summ
 
   def create_scenario(self, name):
     path = self.path(name)
@@ -75,5 +96,9 @@ class FileManager:
     with open(path, 'w') as f:
       f.write('\n'.join(data))
     return
+  
+  def get_file(self, name, file):
+    path = l(f'{self.path(name)}/{file}')
+    return path
 
 filemanager = FileManager()
