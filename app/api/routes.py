@@ -38,6 +38,8 @@ def from_sumo():
 
 @api.route('/simulate/<name>', methods=['POST'])
 def simulate(name):
+  filemanager.create_scenario(name)
+  
   conf = request.get_json()
   tcl_parser.conf_to_tcl(name, conf)
   filemanager.save_conf(name, conf)
@@ -57,6 +59,8 @@ def simulate(name):
 
 @api.route('/validate/<name>', methods=['POST'])
 def test_scenario(name):
+  filemanager.create_scenario(name)
+
   conf = request.get_json()
   tcl_parser.conf_to_tcl(name, conf)
   filemanager.save_conf(name, conf)
