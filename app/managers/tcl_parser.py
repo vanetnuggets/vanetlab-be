@@ -17,6 +17,7 @@ class TclParser():
     def _init_node(self, config, node_num):
         config[NODES][node_num] = {}
         config[NODES][node_num]['id'] = node_num
+        config[NODES][node_num]['type'] = 'basic'
         config[NODES][node_num]['l2id'] = -1
         config[NODES][node_num]['l2'] = None
         config[NODES][node_num]['l2conf'] = {}
