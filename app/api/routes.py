@@ -2,17 +2,19 @@ from flask import Blueprint, send_file, request, make_response, redirect, jsonif
 from app.managers.tcl_parser import tcl_parser
 from app.managers.filemanager import filemanager
 from app.managers.ns3manager import ns3manager
-
+from app.managers.security import authorized
 api = Blueprint('api', __name__)
 
 @api.route('/isalive')
 def isalive():
   return jsonify({
+    "volumetest": "all good",
     "error": False,
     "isalive": True
   })
 
 @api.route('/from-sumo', methods=['POST'])
+@authorized
 def from_sumo():
   data = dict(request.form)
 
@@ -60,6 +62,7 @@ def get_file(name, file):
   }), 400
 
 @api.route('/simulate/<name>', methods=['POST'])
+@authorized
 def simulate(name):
   filemanager.create_scenario(name)
   
@@ -83,6 +86,7 @@ def simulate(name):
 
 
 @api.route('/validate/<name>', methods=['POST'])
+@authorized
 def test_scenario(name):
   filemanager.create_scenario(name)
 
@@ -115,11 +119,14 @@ def get_scenarios():
     "data": filemanager.get_all_scenarios()
   })
 
-@api.route('/scenario/<name>', methods=['GET', 'POST'])
-def scenario(name):
+@api.route('/scenario/<name>', methods=['GET'])
+def get_scenario(name):
   if request.method == 'GET':
     return get_scenario(name)
   
+@api.route('/scenario/<name>', methods=['POST'])
+@authorized
+def post_scenario(name):
   if request.method == 'POST':
     return post_scenario(name)
 
@@ -130,8 +137,6 @@ def exists_scenario(name):
     "error": False,
     "data": res
   })
-
-
 
 def post_scenario(name):
   data = request.get_json()

@@ -2,6 +2,7 @@ from collections import Iterable
 from functools import wraps
 from flask import request, jsonify
 import re
+import config
 
 reg_scenario = r'[a-zA-Z0-9_\.]*'
 reg_uuid = r'[a-zA-Z0-9\-]*'
@@ -23,6 +24,23 @@ def validate_uuid(code):
     return False
   return True
 
+def authorized(f):
+    @wraps(f)
+    def wrapped(*args, **kwargs):
+        auth = request.headers.get('Authorization')
+        if auth == None:
+            return jsonify({
+                "error": True,
+                "message": "no api key supplied"
+            }), 401
+        token = auth.split(" ")[1].strip()
+        if token != config.API_KEY:
+            return ({
+                "error": True,
+                "message": "invalid api key"
+            }), 401
+        return f(*args, **kwargs)
+    return wrapped
 
 def validate_scenario(f):
   @wraps(f)
