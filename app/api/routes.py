@@ -64,25 +64,36 @@ def get_file(name, file):
 @api.route('/simulate/<name>', methods=['POST'])
 @authorized
 def simulate(name):
-  filemanager.create_scenario(name)
   
-  conf = request.get_json()
-  tcl_parser.conf_to_tcl(name, conf)
-  filemanager.save_conf(name, conf)
-  err = ns3manager.simulate(name)
+  try:
+    filemanager.create_scenario(name)
+    print('1')
+    conf = request.get_json()
+    print(conf)
+    tcl_parser.conf_to_tcl(name, conf)
   
-  summary = filemanager.summary(name)
+    print('2')
+    filemanager.save_conf(name, conf)
+    print('3')
+    err = ns3manager.simulate(name)
+    print('4')
+    summary = filemanager.summary(name)
 
-  if err == None:
-    return jsonify({
+    if err == None:
+      return jsonify({
       "error": False,
       "data": summary
     }), 200
   
-  return jsonify({
-    "error": True,
-    "data": err
-  }), 400
+    return jsonify({
+      "error": True,
+      "data": err
+    }), 400
+  except Exception as e:
+    print(e)
+    print('???')
+    return "", 400
+  
 
 
 @api.route('/validate/<name>', methods=['POST'])

@@ -45,7 +45,7 @@ class Ns3manager:
     err = self.validate(name)
     if err != None:
       return err
-    
+    print(l(f'" {self.ns3_scenario} --config={self.my_path}/scenarios/{name}/config.json --mobility={self.my_path}/scenarios/{name}/mobility.tcl --traceloc={self.my_path}/scenarios/{name}"'))
     process = Popen([
       l(f'{self.ns3_path}/ns3'),
       'run',
@@ -62,6 +62,10 @@ class Ns3manager:
     return None
     
   def validate(self, name):
+    print('validujem')
+    
+    print(l(f'" {self.ns3_scenario} --config={self.my_path}/scenarios/{name}/config.json --mobility={self.my_path}/scenarios/{name}/mobility.tcl --traceloc={self.my_path}/scenarios/{name}"'))
+    
     process = Popen([
       l(f'{self.ns3_path}/ns3'),
       'run',

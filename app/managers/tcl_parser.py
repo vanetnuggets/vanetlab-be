@@ -28,6 +28,7 @@ class TclParser():
         config[NODES][node_num]['y'] = None
 
     def tcl_to_conf(self, mobility_path) -> dict:
+        
         conf = {NODES: {}, MAX_AT: 0}
         with open(mobility_path) as f:
             reg_ns = r"\$ns_"
@@ -60,21 +61,24 @@ class TclParser():
         return conf
 
     def conf_to_tcl(self, name, conf):
-        lines = []
-        node_nums = list(conf[NODES].keys())
-        # dict used to determine if node x, y, z is needed to print
-        used_nodes = {num: True for num in node_nums}
-        for at in range(int(conf[MAX_AT]+1)):
-            for node_num in node_nums:
-                data = conf[NODES][node_num][MOBILITY]
-                at = str(float(at))
-                if at in data:
-                    if used_nodes[node_num]:
-                        lines.append(f'$node_({node_num}) set X_ {data[at][X]}')
-                        lines.append(f'$node_({node_num}) set Y_ {data[at][Y]}')
-                        lines.append(f'$node_({node_num}) set Z_ {data[at][Z]}')
-                        used_nodes[node_num] = False
-                    lines.append(f'$ns_ at {at} "$node_({node_num}) setdest {data[at][X]} {data[at][Y]} {data[at][Z]}"')
-        filemanager.save_tcl(name, lines)
-
+        print('A')
+        try:
+            lines = []
+            node_nums = list(conf[NODES].keys())
+            # dict used to determine if node x, y, z is needed to print
+            used_nodes = {num: True for num in node_nums}
+            for at in range(int(conf[MAX_AT]+1)):
+                for node_num in node_nums:
+                    data = conf[NODES][node_num][MOBILITY]
+                    at = str(float(at))
+                    if at in data:
+                        if used_nodes[node_num]:
+                            lines.append(f'$node_({node_num}) set X_ {data[at][X]}')
+                            lines.append(f'$node_({node_num}) set Y_ {data[at][Y]}')
+                            lines.append(f'$node_({node_num}) set Z_ {data[at][Z]}')
+                            used_nodes[node_num] = False
+                        lines.append(f'$ns_ at {at} "$node_({node_num}) setdest {data[at][X]} {data[at][Y]} {data[at][Z]}"')
+            filemanager.save_tcl(name, lines)
+        except Exception as e:
+            print(e)
 tcl_parser = TclParser()
