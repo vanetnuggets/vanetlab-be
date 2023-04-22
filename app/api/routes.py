@@ -11,7 +11,7 @@ import time, json
 
 api = Blueprint('api', __name__)
 
-@sock.route('/api/ws/status/<name>')
+@sock.route('/ws/status/<name>')
 def get_status(socket, name):
   while True:
     status = queue.get_status_for(name)
