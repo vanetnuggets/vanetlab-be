@@ -40,32 +40,33 @@ class Ns3manager:
     if process.returncode == 0:
       return True
     return False
-  
-  def simulate(self, name):
-    err = self.validate(name)
-    if err != None:
-      return err
-    
+
+  def get_run_path(self) -> str:
+      return l(f'{self.my_path}/run')
+
+  def simulate(self, name):   
     process = Popen([
       l(f'{self.ns3_path}/ns3'),
       'run',
-      l(f'" {self.ns3_scenario} --config={self.my_path}/scenarios/{name}/config.json --mobility={self.my_path}/scenarios/{name}/mobility.tcl --traceloc={self.my_path}/scenarios/{name}"')
+      l(f'" {self.ns3_scenario} --config={self.get_run_path()}/config.json --mobility={self.get_run_path()}/mobility.tcl --traceloc={self.get_run_path()}"')
     ],
       cwd=self.ns3_path,
       stdout=PIPE,
       stderr=PIPE
     )
     out, err = process.communicate()
-
+    
     data = err.decode().split('\n')
     filemanager.save_stdout(name, data)
+    filemanager.save_simulation_output(name)
+
     return None
     
   def validate(self, name):
     process = Popen([
       l(f'{self.ns3_path}/ns3'),
       'run',
-      l(f'" {self.ns3_scenario} --config={self.my_path}/scenarios/{name}/config.json --mobility={self.my_path}/scenarios/{name}/mobility.tcl --traceloc={self.my_path}/scenarios/{name} --validate=1"')
+      l(f'" {self.ns3_scenario} --config={self.get_run_path()}/config.json --mobility={self.get_run_path()}/mobility.tcl --traceloc={self.get_run_path()} --validate=1"')
     ],
       cwd=self.ns3_path,
       stdout=PIPE,
