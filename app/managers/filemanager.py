@@ -3,12 +3,18 @@ from shutil import rmtree
 import glob, os
 import uuid
 import json
+import shutil
+from app.config import RO_SCENARIOS
+import app.managers.tcl_parser
 
 from app.managers.osmanager import l 
 
 class FileManager:
   def __init__(self):
     self.my_path = os.path.abspath('.')
+  
+  def get_run_path(self) -> str:
+    return l(f'{self.my_path}/run')
 
   def path(self, name):
     return l(f'{self.my_path}/scenarios/{name}')
@@ -47,15 +53,20 @@ class FileManager:
     sumo_file.save(path)
     return True
   
-  def save_conf(self, name, conf):
+  def save_conf(self, name, conf, save_to=None):
     self.create_scenario(name)
     path = l(f'{self.path(name)}/config.json')
+    if save_to != None:
+      # TODO generalizovat
+      path = l(f'{self.get_run_path()}/config.json')
     with open(path, 'w') as f:
       json.dump(conf, f, indent=2) 
     return True
   
-  def save_tcl(self, name, lines):
+  def save_tcl(self, name, lines, save_to=None):
     path = l(f'{self.path(name)}/mobility.tcl')
+    if save_to == 'run':
+      path = l(f'{self.get_run_path()}/mobility.tcl')
     with open(path, 'w') as f:
       f.write('\n'.join(lines))
     return True
@@ -68,11 +79,20 @@ class FileManager:
     return path
   
   def get_all_scenarios(self):
+    """ browses $APP/scenarios/* for all directories and returns a list of names 
+    of scenarios that have `config.json` file and therefore can be loaded along with
+    information whether the scenario is read-only (example scenarios) or can be modified 
+    based on `RO_SCENARIOS` variable in config.
+    """
     scenarios = []
     for f in glob.glob(l(f'{self.my_path}/scenarios/*')):
       for ff in glob.glob(f'{f}/*'):
         if ff.split(l('/'))[-1] == 'config.json':
-          scenarios.append(f.split(l('/'))[-1])
+          name = f.split(l('/'))[-1]
+          scenarios.append({
+            'name': name,
+            'read-only': True if name in RO_SCENARIOS else False 
+          })
     return scenarios
   
   def exists_scenario(self, name):
@@ -92,13 +112,53 @@ class FileManager:
     return config
   
   def save_stdout(self, name, data):
-    path = l(f'{self.path(name)}/output.txt')
+    path = l(f'{self.get_run_path()}/output.txt')
     with open(path, 'w') as f:
       f.write('\n'.join(data))
     return
   
+  def prepare_simulation(self, name, config):
+      """ moves all simulation files into 'run' directory to be run in 'simulate' method. 
+      moved files are saved into permanent storage in `save_simulation_output` method
+        @config (json): config json from post request body
+      """
+
+      run_path = self.get_run_path
+      self.save_conf("", config, save_to='run')
+      app.managers.tcl_parser.tcl_parser.conf_to_tcl(name, config, save_to=run_path)
+
+      return
+
+  def save_simulation_output(self, sim_name) -> None:
+    """ move all files from 'run' folder into its own simulation folder
+      @sim_name (str): name of scenario to which the files are moved
+    """
+    run_path = self.get_run_path()
+    sim_path = self.path(sim_name)
+    
+    for fname in os.listdir(path):
+      file_path_src = os.path.join(run_path, fname)
+      file_path_dst = os.path.join(sim_path, fname)
+      shutil.move(file_path_src, file_path_dst)
+    
+    return
+
+  def clean_simulation_output(self) -> None:
+    """ remove all files from the 'run' folder so they won't mix with next simulation output
+    should not need to be called because `save_simulation_output` moves it anyways
+    """
+    path = self.get_run_path()
+    shutil.rmtree(path)
+  
   def get_file(self, name, file):
     path = l(f'{self.path(name)}/{file}')
     return path
+
+  def delete_scenario(self, name):
+    if not self.exists_scenario(name):
+      return False
+    path = self.path(name)
+    shutil.rmtree(path)
+    return True
 
 filemanager = FileManager()

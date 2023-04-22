@@ -59,7 +59,7 @@ class TclParser():
             conf['networks'] = {}
         return conf
 
-    def conf_to_tcl(self, name, conf):
+    def conf_to_tcl(self, name, conf, save_to=None):
         lines = []
         node_nums = list(conf[NODES].keys())
         # dict used to determine if node x, y, z is needed to print
@@ -75,6 +75,6 @@ class TclParser():
                         lines.append(f'$node_({node_num}) set Z_ {data[at][Z]}')
                         used_nodes[node_num] = False
                     lines.append(f'$ns_ at {at} "$node_({node_num}) setdest {data[at][X]} {data[at][Y]} {data[at][Z]}"')
-        filemanager.save_tcl(name, lines)
+        filemanager.save_tcl(name, lines, save_to)
 
 tcl_parser = TclParser()

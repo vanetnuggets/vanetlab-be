@@ -2,7 +2,13 @@ from flask import Blueprint, send_file, request, make_response, redirect, jsonif
 from app.managers.tcl_parser import tcl_parser
 from app.managers.filemanager import filemanager
 from app.managers.ns3manager import ns3manager
+from app.managers.queuemanager import queue
+
 from app.managers.security import authorized
+from app.app import sock
+
+import time
+
 api = Blueprint('api', __name__)
 
 @api.route('/isalive')
@@ -65,35 +71,51 @@ def get_file(name, file):
 @authorized
 def simulate(name):
   filemanager.create_scenario(name)
-  
   conf = request.get_json()
-  tcl_parser.conf_to_tcl(name, conf)
-  filemanager.save_conf(name, conf)
-  err = ns3manager.simulate(name)
   
-  summary = filemanager.summary(name)
-
-  if err == None:
+  queue.add({
+    "name": name,
+    "config": conf,
+    "action": "simulate"
+  })
+  queue.next()
+  
+  return {
+    "error": False,
+    "message": "scenario queued up for simulation"
+  }
+ 
+@api.route('/summary/<name>', methods=['GET'])
+def summary(name):
+  try:
+    summary = filemanager.summary(name)
     return jsonify({
       "error": False,
       "data": summary
     }), 200
-  
-  return jsonify({
-    "error": True,
-    "data": err
-  }), 400
+  except:
+    return jsonify({
+      "error": True,
+      "date": "no simulation output"
+    }), 404
 
+@sock.route('/ws/simulation/<name>')
+def notify(ws, name):
+  while True:
+    time.sleep(1)
+    status = queue.get_status_for(name)
+    print(status)
+    ws.send(status)
+    if status['finished'] == True:
+      ws.close()
 
 @api.route('/validate/<name>', methods=['POST'])
 @authorized
-def test_scenario(name):
+def test_scenario(name, save_to='run'):
   filemanager.create_scenario(name)
 
   conf = request.get_json()
-  tcl_parser.conf_to_tcl(name, conf)
-  filemanager.save_conf(name, conf)
-
+  filemanager.prepare_simulation(conf)
   err = ns3manager.validate(name)
 
   if err == None:
@@ -129,6 +151,21 @@ def get_scenario(name):
 def post_scenario(name):
   if request.method == 'POST':
     return post_scenario(name)
+
+
+@api.route('/scenario/<name>', methods=['DELETE'])
+@authorized
+def remove_scenario(name):
+  if filemanager.delete_scenario(name):
+    return {
+      "error": False,
+      "message": f"scenario {name} successfully deleted"
+    }
+  return {
+    "error": True,
+    "message": f"scenario {name} cannot be deleted"
+  }
+      
 
 @api.route('/exists/<name>', methods=['GET'])
 def exists_scenario(name):

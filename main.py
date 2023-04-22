@@ -1,7 +1,7 @@
 from app.app import app
 import os
 
-port = 9000
+port = 5000
 host = '0.0.0.0'
 
 if os.getenv('VANETLAB_BE_PORT') is not None:
