@@ -11,3 +11,4 @@ typing_extensions
 Werkzeug
 zipp
 flask_cors
+flask-sock==0.6.0

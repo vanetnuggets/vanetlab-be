@@ -1,12 +1,15 @@
-from threading import Lock
+from threading import Lock, Thread
 from app.managers.filemanager import filemanager
 from app.managers.ns3manager import ns3manager
 
+# TODO nejaky expert na multithreding a race conditions by to mohol pofixovat toto je bordel jak kkt
+
 class Queue:
   queue = []
-  running = False
-  mtx = Lock()
+  running = False # Toto by mal byt mutex no
+  mtx = Lock() # toto je mutex ale nepouzivam ho
   finished = {}
+  current = None
 
   def __init__(self):
     pass
@@ -16,6 +19,11 @@ class Queue:
       @scenario: json with elements "name", "config" and "action"
       @returns: queue number
     """
+    name = scenario['name']
+    
+    if name == self.current:
+      raise Exception("duplicate name");
+    
     for name in self.queue:
       if scenario == name:
         raise Exception("duplicate name")
@@ -34,19 +42,35 @@ class Queue:
     
     self.running = True
     scenario = self.queue.pop(0)
-    self._activate(scenario)
+    
+    t = Thread(target=self._activate, args=(scenario,))
+    t.start()
   
   def get_status_for(self, name):
-    if name in finished:
+    # Check if the simulation is done
+    if name in self.finished:
+      status = self.finished[name]
+      del self.finished[name]
       return {
         "name": name,
         "finished": True,
-        "status": finished['name']
+        "status": status
       }
-      del finished[name]
+    
+    # Check if the simulation is currently being simulated
+    if self.current is not None and self.current['name'] == name:
+      return {
+        "name": name,
+        "finished": False,
+        "status": "currently being simulated",
+        "position": 0,
+        "total_length": len(self.queue),
+        "current": name
+      }
 
+    # Check if the specified simulation is in the queue
     for i, sim in enumerate(self.queue):
-      if self.queue['name'] == name:
+      if sim['name'] == name:
         return {
           "name": name,
           "finished": False,
@@ -55,20 +79,26 @@ class Queue:
           "total_length": len(self.queue),
           "current": self.queue[0]['name']
         }
+    
+    # not in queue, not finished, not being simulated == invalid
+    return {
+      "name": name,
+      "finished": True,
+      "status": "error - unknown name"
+    }
 
   def _activate(self, scenario) -> None:
     """simulates next scenario in queue
       @scenario: json with elements "name", "config" and "action"
     """
+    self.current = scenario
+
     action = scenario['action']
     name = scenario['name']
     conf = scenario['config']
-    
-    print('preparing', name)
     filemanager.prepare_simulation(name, conf)
 
     err = None
-    print('simulating...')
     if action == 'validate':
       err = ns3manager.validate(name)
     
@@ -78,9 +108,9 @@ class Queue:
     status = {
       "name": name,
       "status": "ok" if err == None else "error",
-      "message": err
+      "message": err,
+      "error": False if err == None else True
     }
-    print(status)
     self.finished[name] = status
 
     self.running = False

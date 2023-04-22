@@ -44,15 +44,11 @@ class Ns3manager:
   def get_run_path(self) -> str:
       return l(f'{self.my_path}/run')
 
-  def simulate(self, name):
-    err = self.validate(name)
-    if err != None:
-      return err
-    
+  def simulate(self, name):   
     process = Popen([
       l(f'{self.ns3_path}/ns3'),
       'run',
-      l(f'" {self.ns3_scenario} --config={self.get_run_path}/config.json --mobility={self.get_run_path}/mobility.tcl --traceloc={self.get_run_path}"')
+      l(f'" {self.ns3_scenario} --config={self.get_run_path()}/config.json --mobility={self.get_run_path()}/mobility.tcl --traceloc={self.get_run_path()}"')
     ],
       cwd=self.ns3_path,
       stdout=PIPE,
@@ -70,7 +66,7 @@ class Ns3manager:
     process = Popen([
       l(f'{self.ns3_path}/ns3'),
       'run',
-      l(f'" {self.ns3_scenario} --config={self.get_run_path}/config.json --mobility={self.get_run_path}/mobility.tcl --traceloc={self.get_run_path} --validate=1"')
+      l(f'" {self.ns3_scenario} --config={self.get_run_path()}/config.json --mobility={self.get_run_path()}/mobility.tcl --traceloc={self.get_run_path()} --validate=1"')
     ],
       cwd=self.ns3_path,
       stdout=PIPE,

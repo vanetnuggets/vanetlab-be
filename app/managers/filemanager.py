@@ -123,9 +123,8 @@ class FileManager:
         @config (json): config json from post request body
       """
 
-      run_path = self.get_run_path
       self.save_conf("", config, save_to='run')
-      app.managers.tcl_parser.tcl_parser.conf_to_tcl(name, config, save_to=run_path)
+      app.managers.tcl_parser.tcl_parser.conf_to_tcl(name, config, save_to='run')
 
       return
 
@@ -136,9 +135,14 @@ class FileManager:
     run_path = self.get_run_path()
     sim_path = self.path(sim_name)
     
-    for fname in os.listdir(path):
+    for fname in os.listdir(run_path):
+      if fname[0] == '.':
+        continue
+
       file_path_src = os.path.join(run_path, fname)
       file_path_dst = os.path.join(sim_path, fname)
+
+      print('moving', file_path_src, 'to', file_path_dst)
       shutil.move(file_path_src, file_path_dst)
     
     return
@@ -155,6 +159,9 @@ class FileManager:
     return path
 
   def delete_scenario(self, name):
+    if name in RO_SCENARIOS:
+      return False
+  
     if not self.exists_scenario(name):
       return False
     path = self.path(name)

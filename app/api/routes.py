@@ -7,9 +7,26 @@ from app.managers.queuemanager import queue
 from app.managers.security import authorized
 from app.app import sock
 
-import time
+import time, json
 
 api = Blueprint('api', __name__)
+
+@sock.route('/api/ws/status/<name>')
+def get_status(socket, name):
+  while True:
+    status = queue.get_status_for(name)
+    socket.send(json.dumps(status))
+
+    if status['finished'] == True:
+      socket.close()
+      break
+
+    time.sleep(1)
+
+@api.route('/key/check')
+@authorized
+def checkkey():
+  return "", 200
 
 @api.route('/isalive')
 def isalive():
@@ -73,13 +90,20 @@ def simulate(name):
   filemanager.create_scenario(name)
   conf = request.get_json()
   
-  queue.add({
-    "name": name,
-    "config": conf,
-    "action": "simulate"
-  })
-  queue.next()
-  
+  try:
+    queue.add({
+      "name": name,
+      "config": conf,
+      "action": "simulate"
+    })
+    queue.next()
+  except Exception as e:
+    print(e)
+    return {
+      "error": True,
+      "message": "scenario already in queue."
+    }, 400
+    
   return {
     "error": False,
     "message": "scenario queued up for simulation"
@@ -99,15 +123,7 @@ def summary(name):
       "date": "no simulation output"
     }), 404
 
-@sock.route('/ws/simulation/<name>')
-def notify(ws, name):
-  while True:
-    time.sleep(1)
-    status = queue.get_status_for(name)
-    print(status)
-    ws.send(status)
-    if status['finished'] == True:
-      ws.close()
+
 
 @api.route('/validate/<name>', methods=['POST'])
 @authorized
@@ -157,14 +173,14 @@ def post_scenario(name):
 @authorized
 def remove_scenario(name):
   if filemanager.delete_scenario(name):
-    return {
+    return jsonify({
       "error": False,
       "message": f"scenario {name} successfully deleted"
-    }
-  return {
+    }), 204
+  return jsonify({
     "error": True,
     "message": f"scenario {name} cannot be deleted"
-  }
+  }), 404
       
 
 @api.route('/exists/<name>', methods=['GET'])
