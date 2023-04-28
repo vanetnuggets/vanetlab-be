@@ -202,7 +202,7 @@ def post_scenario(name):
   return jsonify({
     "error": True,
     "message": f"scenario {name} could not be saved"
-  })
+  }), 400
 
 def get_scenario(name):
   config = {}
