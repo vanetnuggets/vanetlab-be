@@ -57,6 +57,8 @@ class TclParser():
                         conf[NODES][node_num][Y] = y
             conf[MAX_AT] = max_at
             conf['networks'] = {}
+            conf['connections'] = []
+            conf['routing'] = None
         return conf
 
     def conf_to_tcl(self, name, conf, save_to=None):

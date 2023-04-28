@@ -54,7 +54,9 @@ class Queue:
       return {
         "name": name,
         "finished": True,
-        "status": status
+        "status": status['status'],
+        "error": status['error'],
+        "message": status['message']
       }
     
     # Check if the simulation is currently being simulated
@@ -65,7 +67,8 @@ class Queue:
         "status": "currently being simulated",
         "position": 0,
         "total_length": len(self.queue),
-        "current": name
+        "current": name,
+        "error": False
       }
 
     # Check if the specified simulation is in the queue
@@ -77,13 +80,16 @@ class Queue:
           "status": "in queue",
           "position": i,
           "total_length": len(self.queue),
-          "current": self.queue[0]['name']
+          "current": self.queue[0]['name'],
+          "error": False
         }
     
     # not in queue, not finished, not being simulated == invalid
     return {
       "name": name,
       "finished": True,
+      "error": True,
+      "message": "error while running the scenario. ",
       "status": "error - unknown name"
     }
 

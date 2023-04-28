@@ -54,11 +54,21 @@ class FileManager:
     return True
   
   def save_conf(self, name, conf, save_to=None):
+    """ Saves a config to the filesystem
+      @name (str) name of scenario to save to
+      @conf (json) configuration to save
+      @save_to (str) special variable, saves to `run` folder if specified 
+    """
+    # cannot overwrite default scenario
+    if name in RO_SCENARIOS:
+      return False
+
     self.create_scenario(name)
     path = l(f'{self.path(name)}/config.json')
     if save_to != None:
       # TODO generalizovat
       path = l(f'{self.get_run_path()}/config.json')
+  
     with open(path, 'w') as f:
       json.dump(conf, f, indent=2) 
     return True

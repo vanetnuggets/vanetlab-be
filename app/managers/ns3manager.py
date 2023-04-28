@@ -24,7 +24,7 @@ class Ns3manager:
     
   def generate_ns2_mobility(self, name):
     process = Popen([
-      'python',
+      'python3',
       f'{self.sumo_trace}',
       '--fcd-input',
       l(f'{self.my_path}/scenarios/{name}/sumoTrace.xml'),
@@ -45,6 +45,8 @@ class Ns3manager:
       return l(f'{self.my_path}/run')
 
   def simulate(self, name):   
+    print(l(f'" {self.ns3_scenario} --config={self.get_run_path()}/config.json --mobility={self.get_run_path()}/mobility.tcl --traceloc={self.get_run_path()}"'))
+
     process = Popen([
       l(f'{self.ns3_path}/ns3'),
       'run',

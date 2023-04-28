@@ -193,11 +193,16 @@ def exists_scenario(name):
 
 def post_scenario(name):
   data = request.get_json()
-  filemanager.save_conf(name, data)
+  if filemanager.save_conf(name, data):
+    return jsonify({
+      "error": False,
+      "name": name
+    }), 201
+  
   return jsonify({
-    "error": False,
-    "name": name
-  }), 201
+    "error": True,
+    "message": f"scenario {name} could not be saved"
+  })
 
 def get_scenario(name):
   config = {}
