@@ -21,6 +21,9 @@ class Queue:
     """
     name = scenario['name']
     
+    if not filemanager.exists_scenario(name):
+      raise Exception("scenario does not exist")
+
     if name == self.current:
       raise Exception("duplicate name");
     
@@ -65,7 +68,7 @@ class Queue:
         "name": name,
         "finished": False,
         "status": "currently being simulated",
-        "position": 0,
+        "position": "currently being simulated",
         "total_length": len(self.queue),
         "current": name,
         "error": False

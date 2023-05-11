@@ -7,7 +7,7 @@ from app.managers.queuemanager import queue
 from app.managers.security import authorized
 from app.app import sock
 
-import time, json
+import os, time, json
 
 api = Blueprint('api', __name__)
 
@@ -57,26 +57,27 @@ def from_sumo():
       "data": f"invalid file supplied! (needs xml, not {mime})"
     }), 400
 
-  ok = filemanager.create_scenario(name)
+  tmpname = name + os.urandom(16).hex()
+  ok = filemanager.create_scenario(tmpname)
   
   if ok == False:
     return jsonify({
       "error": True,
       "data": f"scenario with named {name} already exists."
     }), 400
-
-  filemanager.save_sumo(name, trace_file)
-
-  ok = ns3manager.generate_ns2_mobility(name)
+  
+  filemanager.save_sumo(tmpname, trace_file)
+  ok = ns3manager.generate_ns2_mobility(tmpname)
+  
   if not ok:
-    filemanager.delete_scenario(name)
+    filemanager.delete_scenario(tmpname)
     return jsonify({
       "error": True,
       "data": f"cannot parse supplied trace file!"
     }), 400
 
-  conf = tcl_parser.tcl_to_conf(filemanager.get_ns2tcl(name))
-  filemanager.save_conf(name, conf)
+  conf = tcl_parser.tcl_to_conf(filemanager.get_ns2tcl(tmpname))
+  filemanager.delete_scenario(tmpname)
 
   return conf, 201
 
@@ -106,7 +107,6 @@ def get_file(name, file):
 @api.route('/simulate/<name>', methods=['POST'])
 @authorized
 def simulate(name):
-  filemanager.create_scenario(name)
   conf = request.get_json()
   
   try:
@@ -120,7 +120,7 @@ def simulate(name):
     print(e)
     return {
       "error": True,
-      "message": "scenario already in queue."
+      "message": str(e)
     }, 400
     
   return {
@@ -139,7 +139,7 @@ def summary(name):
   except:
     return jsonify({
       "error": True,
-      "date": "no simulation output"
+      "data": "no simulation output - did it complete successfully?"
     }), 404
 
 
@@ -147,10 +147,11 @@ def summary(name):
 @api.route('/validate/<name>', methods=['POST'])
 @authorized
 def test_scenario(name, save_to='run'):
+  return jsonify({}), 301
   filemanager.create_scenario(name)
 
   conf = request.get_json()
-  filemanager.prepare_simulation(conf)
+  filemanager.prepare_simulation(name, conf)
   err = ns3manager.validate(name)
 
   if err == None:
