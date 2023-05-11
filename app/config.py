@@ -2,6 +2,8 @@ RUN_PATH='run'
 
 
 RO_SCENARIOS = [
-  'vienna-5-cars',
-  'wave-texas'
+  'vienna-mix',
+  'texas-wave',
+  'novyjork-wifi',
+  'kali-lte'
 ]
