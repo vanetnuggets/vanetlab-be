@@ -34,12 +34,15 @@ class Ns3manager:
       stdout=PIPE,
       stderr=PIPE 
     )
-
     out, err = process.communicate()
     
-    if process.returncode == 0:
-      return True
-    return False
+    # check whether output is empty - the trace exporter script is dogshit and does not scream
+    # when it gets broken input file it just creates an empty file so we check it manually
+    mob_path = l(f'{self.my_path}/scenarios/{name}/mobility.tcl')
+    if os.stat(mob_path).st_size == 0:
+      return False
+
+    return True
 
   def get_run_path(self) -> str:
       return l(f'{self.my_path}/run')

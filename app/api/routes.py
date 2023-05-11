@@ -44,6 +44,19 @@ def from_sumo():
   name = data['name']
   trace_file = request.files['sumotrace']
 
+  if not trace_file:
+    return jsonify({
+      "error": True,
+      "data": f"sumo trace file not supplied!"
+    }), 400
+  
+  if trace_file.mimetype != 'text/xml':
+    mime = trace_file.mimetype
+    return jsonify({
+      "error": True,
+      "data": f"invalid file supplied! (needs xml, not {mime})"
+    }), 400
+
   ok = filemanager.create_scenario(name)
   
   if ok == False:
@@ -54,7 +67,13 @@ def from_sumo():
 
   filemanager.save_sumo(name, trace_file)
 
-  ns3manager.generate_ns2_mobility(name)
+  ok = ns3manager.generate_ns2_mobility(name)
+  if not ok:
+    filemanager.delete_scenario(name)
+    return jsonify({
+      "error": True,
+      "data": f"cannot parse supplied trace file!"
+    }), 400
 
   conf = tcl_parser.tcl_to_conf(filemanager.get_ns2tcl(name))
   filemanager.save_conf(name, conf)

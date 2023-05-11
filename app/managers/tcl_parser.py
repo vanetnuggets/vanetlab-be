@@ -58,6 +58,7 @@ class TclParser():
             conf[MAX_AT] = max_at
             conf['networks'] = {}
             conf['connections'] = []
+            conf['labels'] = []
             conf['routing'] = None
         return conf
 
