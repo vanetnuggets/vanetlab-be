@@ -6,12 +6,14 @@ import json
 import shutil
 from app.config import RO_SCENARIOS
 import app.managers.tcl_parser
+import zipfile
 
 from app.managers.osmanager import l 
 
 class FileManager:
   def __init__(self):
     self.my_path = os.path.abspath('.')
+    self.ns3_path = os.getenv('NS3_PATH')
   
   def get_run_path(self) -> str:
     return l(f'{self.my_path}/run')
@@ -23,6 +25,7 @@ class FileManager:
     return os.path.getsize(l(f'{self.path(name)}/{file}'))
 
   def summary(self, name):
+    print(name)
     summ = {}
     summ['mobility'] = {
       'name': 'mobility.tcl',
@@ -38,6 +41,17 @@ class FileManager:
       'name': 'trace.xml',
       'size': self.size(name, 'trace.xml')
     }
+    
+    summ['ascii'] = {
+      'name': f'{name}_ascii_traces.zip',
+      'size': self.size(name, f'{name}_ascii_traces.zip')
+    }
+
+    summ['pcap'] = {
+      'name': f'{name}_pcap.zip',
+      'size': self.size(name, f'{name}_pcap.zip')
+    }
+
     return summ
 
   def create_scenario(self, name):
@@ -144,7 +158,28 @@ class FileManager:
     """
     run_path = self.get_run_path()
     sim_path = self.path(sim_name)
+    ns3_path = self.ns3_path
     
+    if ns3_path[-1] != '/':
+        ns3_path += '/'
+
+    # tuto najprv movni pcapy z ns3 config do run config ptm zipni vsetky pcap-y
+    with zipfile.ZipFile(run_path + '/' + sim_name + '_pcap.zip', 'w') as zf:
+      for fname in os.listdir(self.ns3_path):
+        if '.pcap' in fname:
+          zf.write(self.ns3_path + fname)
+
+    # tuto zipni vsetky ascii traces 
+    with zipfile.ZipFile(run_path + '/' + sim_name + '_ascii_traces.zip', 'w') as zf:
+      for fname in os.listdir(run_path):
+        if '_asciitrace.txt' in fname:
+          zf.write(run_path + '/' + fname)
+    
+    # vymaz vsetky pcap-y a .txtcka
+    for fname in os.listdir(self.ns3_path):
+      if '_asciitrace.txt' in fname or '.pcap' in fname:
+        os.remove(ns3_path + fname)
+
     for fname in os.listdir(run_path):
       if fname[0] == '.':
         continue
@@ -152,9 +187,9 @@ class FileManager:
       file_path_src = os.path.join(run_path, fname)
       file_path_dst = os.path.join(sim_path, fname)
 
-      print('moving', file_path_src, 'to', file_path_dst)
       shutil.move(file_path_src, file_path_dst)
-    
+      
+      
     return
 
   def clean_simulation_output(self) -> None:

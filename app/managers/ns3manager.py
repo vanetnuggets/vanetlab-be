@@ -55,7 +55,7 @@ class Ns3manager:
       'run',
       l(f'" {self.ns3_scenario} --config={self.get_run_path()}/config.json --mobility={self.get_run_path()}/mobility.tcl --traceloc={self.get_run_path()}"')
     ],
-      cwd=self.ns3_path,
+      cwd=self.get_run_path(),
       stdout=PIPE,
       stderr=PIPE
     )

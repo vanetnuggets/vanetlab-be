@@ -95,7 +95,13 @@ def get_file(name, file):
 
   elif file == 'config':
     file_path = filemanager.get_file(name, 'config.json')
-    
+   
+  elif file == 'pcap': 
+    file_path = filemanager.get_file(name, f'{name}_pcap.zip')
+  
+  elif file == 'ascii':
+    file_path = filemanager.get_file(name, f'{name}_ascii_traces.zip')
+
   if file_path:
     return send_file(file_path)
   
@@ -108,7 +114,6 @@ def get_file(name, file):
 @authorized
 def simulate(name):
   conf = request.get_json()
-  
   try:
     queue.add({
       "name": name,
