@@ -160,26 +160,25 @@ class FileManager:
     sim_path = self.path(sim_name)
     ns3_path = self.ns3_path
     
-    if ns3_path[-1] != '/':
-        ns3_path += '/'
-
     # tuto najprv movni pcapy z ns3 config do run config ptm zipni vsetky pcap-y
     with zipfile.ZipFile(run_path + '/' + sim_name + '_pcap.zip', 'w') as zf:
       for fname in os.listdir(self.ns3_path):
         if '.pcap' in fname:
-          zf.write(self.ns3_path + fname)
+          file_src = os.path.join(ns3_path, fname)
+          file_dst = os.path.join(sim_path, fname)
+          
+          shutil.move(file_src, file_dst)
+          zf.write(file_dst)
+          os.remove(file_dst)
 
     # tuto zipni vsetky ascii traces 
     with zipfile.ZipFile(run_path + '/' + sim_name + '_ascii_traces.zip', 'w') as zf:
       for fname in os.listdir(run_path):
         if '_asciitrace.txt' in fname:
-          zf.write(run_path + '/' + fname)
+          file_src = os.path.join(run_path, fname)
+          zf.write(file_src)
+          os.remove(file_src)
     
-    # vymaz vsetky pcap-y a .txtcka
-    for fname in os.listdir(self.ns3_path):
-      if '_asciitrace.txt' in fname or '.pcap' in fname:
-        os.remove(ns3_path + fname)
-
     for fname in os.listdir(run_path):
       if fname[0] == '.':
         continue
