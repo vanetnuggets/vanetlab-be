@@ -213,7 +213,7 @@ def exists_scenario(name):
   res = filemanager.exists_scenario(name)
   return({
     "error": False,
-    "data": res
+    "exists": res
   })
 
 def post_scenario(name):
