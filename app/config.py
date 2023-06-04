@@ -2,7 +2,7 @@ RUN_PATH='run'
 
 
 RO_SCENARIOS = [
-  'vienna-mix',
+  'vienna-eth',
   'texas-wave',
   'novyjork-wifi',
   'kali-lte',
