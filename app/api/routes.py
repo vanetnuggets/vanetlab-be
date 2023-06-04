@@ -153,6 +153,7 @@ def summary(name):
 @authorized
 def test_scenario(name, save_to='run'):
   return jsonify({}), 301
+  # xd
   filemanager.create_scenario(name)
 
   conf = request.get_json()

@@ -75,7 +75,10 @@ class FileManager:
     """
     # cannot overwrite default scenario
     if name in RO_SCENARIOS:
-      return False
+      return False, "this scenario is read only"
+    
+    if len(conf['networks']) == 0 or len(conf['nodes']) == 0:
+      return False, "scenario must have at least 1 node and 1 network"
 
     self.create_scenario(name)
     path = l(f'{self.path(name)}/config.json')
@@ -85,7 +88,7 @@ class FileManager:
   
     with open(path, 'w') as f:
       json.dump(conf, f, indent=2) 
-    return True
+    return True, ""
   
   def save_tcl(self, name, lines, save_to=None):
     path = l(f'{self.path(name)}/mobility.tcl')
