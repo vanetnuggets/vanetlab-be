@@ -219,7 +219,9 @@ def exists_scenario(name):
 
 def post_scenario(name):
   data = request.get_json()
-  if filemanager.save_conf(name, data):
+  ok, reason =  filemanager.save_conf(name, data)
+  print('!!', ok, reason)
+  if ok:
     return jsonify({
       "error": False,
       "name": name
@@ -227,7 +229,7 @@ def post_scenario(name):
   
   return jsonify({
     "error": True,
-    "message": f"scenario {name} could not be saved"
+    "message": f"cannot save the scenario because {reason}"
   }), 400
 
 def get_scenario(name):
