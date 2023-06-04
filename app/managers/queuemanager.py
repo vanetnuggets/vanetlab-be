@@ -20,7 +20,7 @@ class Queue:
       @returns: queue number
     """
     name = scenario['name']
-    
+
     if not filemanager.exists_scenario(name):
       raise Exception("scenario does not exist")
 

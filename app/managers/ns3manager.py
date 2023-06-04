@@ -61,7 +61,14 @@ class Ns3manager:
     )
     out, err = process.communicate()
     
+    data2 = out.decode().split('\n')
+    print('\n'.join(data2))
+
     data = err.decode().split('\n')
+    print('\n'.join(data))
+
+    
+
     filemanager.save_stdout(name, data)
     filemanager.save_simulation_output(name)
 
